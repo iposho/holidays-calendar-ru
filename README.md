@@ -1,3 +1,4 @@
+![Vercel](https://vercelbadge.vercel.app/api/iposho/holidays-calendar-ru?style=flat)
 # Производственный календарь
 Производственные календари в формате JSON, актуальные для Российской Федерации.
 
@@ -9,7 +10,7 @@
 ```js
 curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023"
 ```
-Вернет объект с годом и массивом месяцев.
+Вернет объект с годом и массивом объектов месяцев. Описание объекта месяца ниже.
 ```json
 {
   "year": 2023,
@@ -26,6 +27,8 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/1"
 ```
 Вернет объект месяца. Нумерация месяцев начинается с 1, а не с 0. Январь — месяц под номером 1, декабрь — под номером 12.
+
+Объект содержит id месяца, имя, количество рабочих, нерабочих и коротких дней.
 ```json
 {
   "year": 2023,
@@ -47,6 +50,8 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/1"
 ```
 Вернет объект конкретного дня.
+
+Объект содержит информацию о месяце, точную дату, признак рабочего/нерабочего дня и описания праздника, если день праздничный.
 ```json
 {
   "year": 2023,
