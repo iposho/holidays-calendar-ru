@@ -22,13 +22,13 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 ```
 <br>
 
-### /api/calendar/2023/:month/:year
+### /api/calendar/:year/:month/
 ```js
 curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/1"
 ```
 Вернет объект месяца. Нумерация месяцев начинается с 1, а не с 0. Январь — месяц под номером 1, декабрь — под номером 12.
 
-Объект содержит id месяца, имя, количество рабочих, нерабочих и коротких дней, а также часов при восьмичасовой рабочей неделе.
+Объект содержит id месяца, имя, количество рабочих, нерабочих и коротких дней, а также рабочих часов при восьмичасовой рабочей неделе.
 ```json
 {
   "year": 2023,
@@ -47,7 +47,7 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 
 ### /api/calendar/:year/:month/:day
 ```js
-curl -H "Content-Type:application/json" -X GET "http://localhost:4000/api/calendar/2023/3/7"
+curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/3/7"
 ```
 Вернет объект конкретного дня.
 
