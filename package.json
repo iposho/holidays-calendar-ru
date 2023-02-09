@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Производственный календарь",
   "author": "Pavel Kuzyakin <pavel@kuzyak.in> (https://kuzyak.in)",
-  "homepage": "https://github.com/iposho/holidays-calendar-ru",
+  "homepage": "https://github.com/iposho/holidays-calendar-ru#readme",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon ./index.js",

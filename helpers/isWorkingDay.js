@@ -11,7 +11,10 @@ const isWorkingDay = (year, month, day) => {
 
   return {
     year: Number(year),
-    month: monthName,
+    month: {
+      name: monthName,
+      id: correctMonth,
+    },
     date,
     isWorkingDay: condition,
   };

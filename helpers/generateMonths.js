@@ -6,6 +6,7 @@ const generateMonths = (year) => {
     const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(year, month, 1));
     const obj = {
       name: monthName,
+      id: month,
       workingDays: countWorkingDays(year, month),
     };
     months.push(obj);
