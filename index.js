@@ -10,6 +10,10 @@ const { availableYears } = require('./helpers/availableYears');
 const app = express();
 const port = 4000;
 
+app.get('/', (req, res) => {
+  res.send("That's works, folks!");
+});
+
 app.get('/api', (req, res) => {
   res.status(400).json(getErrorMessages('path'));
 });
