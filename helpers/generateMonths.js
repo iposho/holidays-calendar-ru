@@ -8,8 +8,8 @@ const generateMonths = (year) => {
     const workingDays = countWorkingDays(year, month);
 
     const obj = {
-      name: monthName,
       id: month,
+      name: monthName,
       workingDays,
       notWorkingDays: getDaysCount(year, month + 1) - workingDays,
     };

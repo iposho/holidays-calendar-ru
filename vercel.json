@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "buildCommand": null,
   "builds": [
     {
       "src": "index.js",
