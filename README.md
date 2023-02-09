@@ -1,5 +1,7 @@
 # Производственный календарь
-Производственные календари, актуальные для Российской Федерации. Первый доступный год — 2023, последний — 2024.
+Производственные календари в формате JSON, актуальные для Российской Федерации.
+
+Первый доступный год — 2023, последний — 2024.
 
 ## Примеры использования
 
@@ -11,16 +13,19 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 ```json
 {
   "year": 2023,
-  "months": [...],
+  "months": [
+   ...
+  ],
   "status": 200
 }
 ```
+<br>
 
-### /api/calendar/2023/1/
+### /api/calendar/2023/1/{month}
 ```js
 curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/1"
 ```
-Вернет объект месяца. Нумерация месяцев начинается с 1, а не с 0. Январь — месяц под номером 1.
+Вернет объект месяца. Нумерация месяцев начинается с 1, а не с 0. Январь — месяц под номером 1, декабрь — под номером 12.
 ```json
 {
   "year": 2023,
@@ -35,7 +40,9 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
   "status": 200
 }
 ```
-### /api/calendar/2023/1/1
+<br>
+
+### /api/calendar/2023/{month}/{day}
 ```js
 curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/1"
 ```
@@ -53,6 +60,7 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
   "status": 200
 }
 ```
+<br>
 
 ## Локальная установка
 ```bash
@@ -62,6 +70,7 @@ $ npm i
 [...]
 $ npm run dev
 ```
+<br>
 
 ## Лицензия
 Это проект с открытым кодом, распространяющийся под лицензией [MIT License](LICENSE).
