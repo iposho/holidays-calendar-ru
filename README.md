@@ -1,4 +1,4 @@
-![Vercel](https://vercelbadge.vercel.app/api/iposho/holidays-calendar-ru?style=flat)
+![Vercel](https://vercelbadge.vercel.app/api/iposho/holidays-calendar-ru?style=flat) ![GitHub Size](https://img.shields.io/github/languages/code-size/iposho/holidays-calendar-ru) ![Last Commit](https://img.shields.io/github/last-commit/iposho/holidays-calendar-ru) ![MIT LICENSE](https://img.shields.io/github/license/iposho/holidays-calendar-ru)
 # Производственный календарь
 Производственные календари в формате JSON, актуальные для Российской Федерации.
 
@@ -7,7 +7,7 @@
 ## Примеры использования
 
 ### /api/calendar/:year
-```js
+```bash
 curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023"
 ```
 Вернет объект с годом и массивом объектов месяцев. Описание объекта месяца ниже.
@@ -23,7 +23,7 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 <br>
 
 ### /api/calendar/:year/:month/
-```js
+```bash
 curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/1"
 ```
 Вернет объект месяца. Нумерация месяцев начинается с 1, а не с 0. Январь — месяц под номером 1, декабрь — под номером 12.
@@ -46,7 +46,7 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 <br>
 
 ### /api/calendar/:year/:month/:day
-```js
+```bash
 curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/3/7"
 ```
 Вернет объект конкретного дня.
