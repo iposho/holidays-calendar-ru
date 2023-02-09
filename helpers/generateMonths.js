@@ -1,5 +1,7 @@
 const { countWorkingDays } = require('./countWorkingDays');
 const { getDaysCount } = require('./getDaysCount');
+const { countShortDays } = require('./countShortDays');
+const { countWorkingHours } = require('./countWorkingHours');
 
 const generateMonths = (year) => {
   const months = [];
@@ -12,7 +14,10 @@ const generateMonths = (year) => {
       name: monthName,
       workingDays,
       notWorkingDays: getDaysCount(year, month + 1) - workingDays,
+      shortDays: countShortDays(year, month),
+      workHours: countWorkingHours(year, month),
     };
+
     months.push(obj);
   }
   return months;
