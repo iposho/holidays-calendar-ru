@@ -6,7 +6,7 @@ const isWorkingDay = (year, month, day) => {
 
   const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
 
-  const condition = (date.getDay() === 6 || date.getDay() === 0)
+  const condition = !(date.getDay() === 6 || date.getDay() === 0)
     && !holidays[`h${year}`]().some((holiday) => holiday.valueOf() === date.valueOf());
 
   return {

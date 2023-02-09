@@ -3,23 +3,30 @@ const express = require('express');
 const { generateMonths } = require('./helpers/generateMonths');
 const { generateMonth } = require('./helpers/generateMonth');
 const { isWorkingDay } = require('./helpers/isWorkingDay');
-const { isCorrectYear, isCorrectDay, isCorrectMonth } = require('./helpers/isCorrect');
+const { isNotCorrectYear, isNotCorrectDay, isNotCorrectMonth } = require('./helpers/isNotCorrect');
 const { addEntryToRequestsLog, addEntryToErrorLog } = require('./libs/logger');
+const { getErrorMessages } = require('./helpers/getErrorMessages');
+const { availableYears } = require('./helpers/availableYears');
 
 const app = express();
-const port = 5000;
+const port = 4000;
 
-app.get('/', (req, res) => {
-  res.status(500).json({ error: 'Invalid API path', status: 500 });
+app.get('/api', (req, res) => {
+  addEntryToErrorLog(req, getErrorMessages('path'));
+  res.status(400).json(getErrorMessages('path'));
+});
+
+app.get('/api/calendar/', (req, res) => {
+  addEntryToRequestsLog(req);
+  res.send({ years: availableYears(), status: 200 });
 });
 
 app.get('/api/calendar/:year', (req, res) => {
   const { year } = req.params;
 
-  if (isCorrectYear(year)) {
-    const errObj = { error: 'Invalid year', status: 500 };
-    addEntryToErrorLog(req, errObj);
-    res.status(500).json(errObj);
+  if (isNotCorrectYear(year)) {
+    addEntryToErrorLog(req, getErrorMessages('year'));
+    res.status(400).json(getErrorMessages('year'));
   } else {
     const data = generateMonths(year);
     addEntryToRequestsLog(req);
@@ -30,14 +37,12 @@ app.get('/api/calendar/:year', (req, res) => {
 app.get('/api/calendar/:year/:month', (req, res) => {
   const { month, year } = req.params;
 
-  if (isCorrectYear(year)) {
-    const errObj = { error: 'Invalid year', status: 500 };
-    addEntryToErrorLog(req, errObj);
-    res.status(500).json(errObj);
-  } else if (isCorrectMonth(month)) {
-    const errObj = { error: 'Invalid month', status: 500 };
-    addEntryToErrorLog(req, errObj);
-    res.status(500).json(errObj);
+  if (isNotCorrectYear(year)) {
+    addEntryToErrorLog(req, getErrorMessages('year'));
+    res.status(400).json(getErrorMessages('year'));
+  } else if (isNotCorrectMonth(month)) {
+    addEntryToErrorLog(req, getErrorMessages('month'));
+    res.status(400).json(getErrorMessages('month'));
   } else {
     const data = generateMonth(year, month);
     addEntryToRequestsLog(req);
@@ -48,18 +53,15 @@ app.get('/api/calendar/:year/:month', (req, res) => {
 app.get('/api/calendar/:year/:month/:day', (req, res) => {
   const { day, month, year } = req.params;
 
-  if (isCorrectYear(year)) {
-    const errObj = { error: 'Invalid year', status: 500 };
-    addEntryToErrorLog(req, errObj);
-    res.status(500).json(errObj);
-  } else if (isCorrectMonth(month)) {
-    const errObj = { error: 'Invalid month', status: 500 };
-    addEntryToErrorLog(req, errObj);
-    res.status(500).json(errObj);
-  } else if (isCorrectDay(year, month, day)) {
-    const errObj = { error: 'Invalid day', status: 500 };
-    addEntryToErrorLog(req, errObj);
-    res.status(500).json(errObj);
+  if (isNotCorrectYear(year)) {
+    addEntryToErrorLog(req, getErrorMessages('year'));
+    res.status(400).json(getErrorMessages('year'));
+  } else if (isNotCorrectMonth(month)) {
+    addEntryToErrorLog(req, getErrorMessages('month'));
+    res.status(400).json(getErrorMessages('month'));
+  } else if (isNotCorrectDay(year, month, day)) {
+    addEntryToErrorLog(req, getErrorMessages('day'));
+    res.status(400).json(getErrorMessages('day'));
   } else {
     const data = isWorkingDay(year, month, day);
     addEntryToRequestsLog(req);
