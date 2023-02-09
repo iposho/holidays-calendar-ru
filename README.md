@@ -6,7 +6,7 @@
 
 ## Примеры использования
 
-### /api/calendar/2023
+### /api/calendar/:year
 ```js
 curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023"
 ```
@@ -22,7 +22,7 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 ```
 <br>
 
-### /api/calendar/2023/1/{month}
+### /api/calendar/2023/:month/:year
 ```js
 curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/1"
 ```
@@ -38,16 +38,16 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
     "workingDays": 17,
     "notWorkingDays": 14,
     "shortDays": 0,
-    "workHours": 0
+    "workingHours": 136
   },
   "status": 200
 }
 ```
 <br>
 
-### /api/calendar/2023/{month}/{day}
+### /api/calendar/:year/:month/:day
 ```js
-curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/1"
+curl -H "Content-Type:application/json" -X GET "http://localhost:4000/api/calendar/2023/3/7"
 ```
 Вернет объект конкретного дня.
 
@@ -56,12 +56,12 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 {
   "year": 2023,
   "month": {
-    "name": "January",
-    "id": 0
+    "name": "March",
+    "id": 2
   },
-  "date": "2023-01-01T00:00:00.000Z",
-  "isWorkingDay": false,
-  "holiday": "Новый год",
+  "date": "2023-03-07T00:00:00.000Z",
+  "isWorkingDay": true,
+  "shortday": "Международный женский день",
   "status": 200
 }
 ```
