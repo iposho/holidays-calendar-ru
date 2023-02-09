@@ -1,0 +1,21 @@
+{
+  "name": "holidays-calendar-ru",
+  "version": "0.1.0",
+  "description": "Производственный календарь",
+  "author": "Pavel Kuzyakin <pavel@kuzyak.in> (https://kuzyak.in)",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon ./index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "8.22.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "nodemon": "^2.0.20"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
