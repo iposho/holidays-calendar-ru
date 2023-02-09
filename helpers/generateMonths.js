@@ -15,7 +15,7 @@ const generateMonths = (year) => {
       workingDays,
       notWorkingDays: getDaysCount(year, month + 1) - workingDays,
       shortDays: countShortDays(year, month),
-      workHours: countWorkingHours(year, month),
+      workHours: countWorkingHours(year, month + 1),
     };
 
     months.push(obj);
