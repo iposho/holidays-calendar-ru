@@ -1,5 +1,5 @@
-const { getDaysCount } = require('./getDaysCount');
 const { LAST_AVAILABLE_YEAR, YEAR_SINCE } = require('../configs/global');
+const { getDaysCount } = require('./getDaysCount');
 
 const isNotCorrectYear = (year) => year < YEAR_SINCE || year > LAST_AVAILABLE_YEAR;
 const isNotCorrectMonth = (month) => month < 1 || month > 12;

@@ -6,7 +6,7 @@
 
 ## Примеры использования
 
-### /api/calendar/
+### /api/calendar
 ```bash
 curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar"
 ```
@@ -46,7 +46,7 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 ```
 <br>
 
-### /api/calendar/:year/:month/
+### /api/calendar/:year/:month
 ```bash
 curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/1"
 ```
@@ -71,21 +71,22 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 
 ### /api/calendar/:year/:month/:day
 ```bash
-curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/3/7"
+curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/2/22"
 ```
 Вернет объект конкретного дня.
 
-Объект содержит информацию о месяце, точную дату, признак рабочего/нерабочего дня и название праздника, если день праздничный.
+Объект содержит информацию о месяце, точную дату, признак рабочего/нерабочего/сокращенного, название праздника, если день праздничный или предпраздничный.
 ```json
 {
   "year": 2023,
   "month": {
-    "name": "March",
-    "id": 2
+    "name": "February",
+    "id": 1
   },
-  "date": "2023-03-07T00:00:00.000Z",
+  "date": "2023-02-22T00:00:00.000Z",
   "isWorkingDay": true,
-  "shortday": "Международный женский день",
+  "isShortday": true,
+  "holiday": "День защитника Отечества",
   "status": 200
 }
 ```

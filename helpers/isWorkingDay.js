@@ -29,7 +29,8 @@ const isWorkingDay = (year, month, day) => {
   }
 
   if (shortDay) {
-    result.shortday = shortDay.name;
+    result.isShortday = true;
+    result.holiday = shortDay.name;
   }
 
   return result;
