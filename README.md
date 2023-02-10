@@ -131,5 +131,13 @@ npm run dev
 ```
 <br>
 
+## Как внести свой вклад
+1. [Форкните](https://github.com/iposho/holidays-calendar-ru/fork) этот репозиторий.
+2. Создайте ветку своей фичи (`git checkout -b my-new-feature`).
+3. Закоммитьте изменения (`git commit -am 'Add some feature'`).
+4. Запушьте изменения в репозиторий (`git push origin my-new-feature`).
+5. Создайте новый пулл-реквест в ветку development.
+<br>
+
 ## Лицензия
 Это проект с открытым кодом, распространяющийся под лицензией [MIT License](LICENSE).
