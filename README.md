@@ -6,6 +6,22 @@
 
 ## Примеры использования
 
+### /api/calendar/
+```bash
+curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar"
+```
+Вернет массив имеющихся в наличии календарей.
+```json
+{
+  "years": [
+    2023,
+    2024
+  ],
+  "status": 200
+}
+```
+<br>
+
 ### /api/calendar/:year
 ```bash
 curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023"
@@ -15,7 +31,15 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 {
   "year": 2023,
   "months": [
-   ...
+    {
+      "id": 0,
+      "name": "January",
+      "workingDays": 17,
+      "notWorkingDays": 14,
+      "shortDays": 0,
+      "workingHours": 136
+    },
+    ...
   ],
   "status": 200
 }
@@ -69,11 +93,11 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 
 ## Локальная установка
 ```bash
-$ git clone https://github.com/iposho/holidays-calendar-ru.git
-$ cd holidays-calendar-ru/
-$ npm i
+git clone https://github.com/iposho/holidays-calendar-ru.git
+cd holidays-calendar-ru/
+npm i
 [...]
-$ npm run dev
+npm run dev
 ```
 <br>
 

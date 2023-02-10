@@ -19,7 +19,7 @@ app.get('/api', (req, res) => {
 });
 
 app.get('/api/calendar/', (req, res) => {
-  res.send({ years: availableYears(), status: 200 });
+  res.status(200).json({ years: availableYears(), status: 200 });
 });
 
 app.get('/api/calendar/:year', (req, res) => {
@@ -29,7 +29,7 @@ app.get('/api/calendar/:year', (req, res) => {
     res.status(400).json(getErrorMessages('year'));
   } else {
     const data = generateMonths(year);
-    res.send({ year: Number(year), months: data, status: 200 });
+    res.status(200).json({ year: Number(year), months: data, status: 200 });
   }
 });
 
@@ -42,7 +42,7 @@ app.get('/api/calendar/:year/:month', (req, res) => {
     res.status(400).json(getErrorMessages('month'));
   } else {
     const data = generateMonth(year, month);
-    res.send({ year: Number(year), month: data, status: 200 });
+    res.status(200).json({ year: Number(year), month: data, status: 200 });
   }
 });
 
