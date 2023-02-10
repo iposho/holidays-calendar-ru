@@ -7,6 +7,7 @@ const { isNotCorrectYear, isNotCorrectDay, isNotCorrectMonth } = require('./help
 const { getErrorMessages } = require('./helpers/getErrorMessages');
 const { availableYears } = require('./helpers/availableYears');
 const { createMainPage } = require('./helpers/createMainPage');
+const { generateHolidays } = require('./helpers/generateHolidays');
 
 const app = express();
 const port = 4000;
@@ -31,6 +32,17 @@ app.get('/api/calendar/:year', (req, res) => {
   } else {
     const data = generateMonths(year);
     res.status(200).json({ year: Number(year), months: data, status: 200 });
+  }
+});
+
+app.get('/api/calendar/:year/holidays', (req, res) => {
+  const { year } = req.params;
+
+  if (isNotCorrectYear(year)) {
+    res.status(400).json(getErrorMessages('year'));
+  } else {
+    const data = generateHolidays(year);
+    res.status(200).json({ year: Number(year), ...data, status: 200 });
   }
 });
 

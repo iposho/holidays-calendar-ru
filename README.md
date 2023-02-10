@@ -48,6 +48,32 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 ```
 <br>
 
+### /api/calendar/:year/holidays
+```bash
+curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/holidays"
+```
+Возвращает праздничные и сокращенные предпраздничные дни для конкретного года.
+```json
+{
+  "year": 2023,
+  "holidays": [
+    {
+      "date": "2023-01-01T00:00:00.000Z",
+      "name": "Новый год"
+    }
+    // etc
+  ],
+  "shortDays": [
+    {
+      "date": "2023-02-22T00:00:00.000Z",
+      "name": "День защитника Отечества"
+    }
+    //etc
+  "status": 200
+}
+```
+<br>
+
 ### /api/calendar/:year/:month
 ```bash
 curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/1"
