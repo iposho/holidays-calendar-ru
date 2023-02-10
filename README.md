@@ -69,6 +69,7 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
       "name": "День защитника Отечества"
     }
     //etc
+  ],
   "status": 200
 }
 ```
