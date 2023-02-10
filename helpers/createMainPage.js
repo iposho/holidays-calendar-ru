@@ -5,14 +5,20 @@ const fs = require('fs');
 const head = `
   <head>
     <title>Производственный календарь</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
 `;
 
 const styles = `
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      padding: 30px 15px; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,
+      padding: 30px 15px;
+      font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,
       sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
+      font-size: 1rem;
     }
   </style>
 `;
