@@ -6,12 +6,13 @@ const { isWorkingDay } = require('./helpers/isWorkingDay');
 const { isNotCorrectYear, isNotCorrectDay, isNotCorrectMonth } = require('./helpers/isNotCorrect');
 const { getErrorMessages } = require('./helpers/getErrorMessages');
 const { availableYears } = require('./helpers/availableYears');
+const { createMainPage } = require('./helpers/createMainPage');
 
 const app = express();
 const port = 4000;
 
 app.get('/', (req, res) => {
-  res.send("That's works, folks!");
+  createMainPage(res);
 });
 
 app.get('/api', (req, res) => {

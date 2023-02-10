@@ -4,6 +4,8 @@
 
 Первый доступный год — 2023, последний — 2024.
 
+Постоянная ссылка на репозиторий: [github.com/iposho/holidays-calendar-ru](https://github.com/iposho/holidays-calendar-ru#)
+
 ## Примеры использования
 
 ### /api/calendar
@@ -39,7 +41,7 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
       "shortDays": 0,
       "workingHours": 136
     },
-    ...
+    // February, March etc.
   ],
   "status": 200
 }
