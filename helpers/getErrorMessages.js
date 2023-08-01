@@ -1,18 +1,15 @@
-const status = 400;
+const errorStatus = 400;
 
-const getErrorMessages = (type = '') => {
-  switch (type) {
-    case 'year':
-      return { error: 'Invalid year', status };
-    case 'month':
-      return { error: 'Invalid month', status };
-    case 'day':
-      return { error: 'Invalid day', status };
-    case 'path':
-      return { error: 'Invalid API path', status };
-    default:
-      return { error: 'Unknown error', status };
-  }
+const errorMessages = {
+  year: { error: 'Invalid year', status: errorStatus },
+  month: { error: 'Invalid month', status: errorStatus },
+  day: { error: 'Invalid day', status: errorStatus },
+  path: { error: 'Invalid API path', status: errorStatus },
+  default: { error: 'Unknown error', status: errorStatus },
+};
+
+const getErrorMessages = (type = 'default') => {
+  return errorMessages[type] || errorMessages.default;
 };
 
 module.exports = {

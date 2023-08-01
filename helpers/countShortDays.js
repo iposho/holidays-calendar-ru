@@ -1,15 +1,17 @@
 const shortDays = require('../data/shortDays');
 
 const countShortDays = (year, month) => {
+  const shortDaysOfYearMonth = shortDays[`h${year}`]();
+  const startDate = new Date(Date.UTC(year, month, 1));
+  const endDate = new Date(Date.UTC(year, month + 1, 0));
   let count = 0;
-  const date = new Date(Date.UTC(year, month, 1));
 
-  while (date.getMonth() === Number(month)) {
-    if (shortDays[`h${year}`]().some((e) => e.date === date.valueOf())) {
+  for (let date = startDate; date <= endDate; date.setDate(date.getDate() + 1)) {
+    if (shortDaysOfYearMonth.some((shortDay) => shortDay.date === date.valueOf())) {
       count++;
     }
-    date.setDate(date.getDate() + 1);
   }
+
   return count;
 };
 

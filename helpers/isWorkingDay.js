@@ -4,15 +4,11 @@ const shortDays = require('../data/shortDays');
 const isWorkingDay = (year, month, day) => {
   const correctMonth = month - 1;
   const date = new Date(Date.UTC(year, correctMonth, day));
-
   const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
+  const isWeekend = date.getDay() === 6 || date.getDay() === 0;
 
-  const obj = holidays[`h${year}`]().find((el) => el.date === date.valueOf());
-
+  const holiday = holidays[`h${year}`]().find((el) => el.date === date.valueOf());
   const shortDay = shortDays[`h${year}`]().find((el) => el.date === date.valueOf());
-
-  const condition = !(date.getDay() === 6 || date.getDay() === 0)
-    && !holidays[`h${year}`]().some((e) => e.date === date.valueOf());
 
   const result = {
     year: Number(year),
@@ -21,11 +17,11 @@ const isWorkingDay = (year, month, day) => {
       id: correctMonth,
     },
     date,
-    isWorkingDay: condition,
+    isWorkingDay: !isWeekend && !holiday && !shortDay,
   };
 
-  if (obj) {
-    result.holiday = obj.name;
+  if (holiday) {
+    result.holiday = holiday.name;
   }
 
   if (shortDay) {
