@@ -11,12 +11,10 @@ const generateHolidays = (year) => {
     name: i.name,
   }));
 
-  const result = {
+  return {
     holidays: holidaysArray,
     shortDays: shortDaysArray,
   };
-
-  return result;
 };
 
 module.exports = {

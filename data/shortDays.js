@@ -11,7 +11,7 @@ const h2024 = (year = 2024) => [
   createDateString(year, 2, 7, 'Международный женский день'),
   createDateString(year, 4, 8, 'День Победы'),
   createDateString(year, 5, 11, 'День России'),
-  createDateString(year, 11, 31, 'Новый год'),
+  createDateString(year, 10, 2, 'День народного единства'),
 ];
 
 module.exports = {
