@@ -1,5 +1,6 @@
 const holidays = require('../data/holidays');
 const shortDays = require('../data/shortDays');
+const workingHolidays = require('../data/workingHolidays');
 
 const isWorkingDay = (year, month, day) => {
   const correctMonth = month - 1;
@@ -12,7 +13,10 @@ const isWorkingDay = (year, month, day) => {
   const shortDay = shortDays[`h${year}`]().find((el) => el.date === date.valueOf());
 
   const condition = !(date.getDay() === 6 || date.getDay() === 0)
-    && !holidays[`h${year}`]().some((e) => e.date === date.valueOf());
+    && (
+      !holidays[`h${year}`]().some((e) => e.date === date.valueOf()) ||
+      workingHolidays[`wh${year}`]().some((e) => e.date === date.valueOf())
+    )
 
   const result = {
     year: Number(year),
