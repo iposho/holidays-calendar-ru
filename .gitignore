@@ -118,3 +118,4 @@ dist
 .idea
 package-lock.json
 .vercel
+.env.local
