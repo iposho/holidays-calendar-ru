@@ -17,7 +17,7 @@ const isWorkingDay = (year, month, day) => {
   const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
 
   const isHoliday = holidays[`h${year}`]().some((e) => e.date === date.valueOf());
-  const isShortDay = shortDays[`h${year}`]().some((e) => e.date === date.valueOf());
+  const isShortDay = shortDays[`sd${year}`]().some((e) => e.date === date.valueOf());
 
   const result = {
     year: Number(year),
@@ -35,7 +35,7 @@ const isWorkingDay = (year, month, day) => {
   }
 
   if (isShortDay) {
-    const shortDay = shortDays[`h${year}`]().find((el) => el.date === date.valueOf());
+    const shortDay = shortDays[`sd${year}`]().find((el) => el.date === date.valueOf());
     result.isShortDay = true;
     result.holiday = shortDay.name;
   }

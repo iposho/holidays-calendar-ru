@@ -6,7 +6,7 @@ const generateHolidays = (year) => {
     date: new Date(i.date),
     name: i.name,
   }));
-  const shortDaysArray = shortDays[`h${year}`]().map((i) => ({
+  const shortDaysArray = shortDays[`sd${year}`]().map((i) => ({
     date: new Date(i.date),
     name: i.name,
   }));
