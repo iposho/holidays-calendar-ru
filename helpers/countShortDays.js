@@ -5,7 +5,7 @@ const countShortDays = (year, month) => {
   const date = new Date(Date.UTC(year, month, 1));
 
   while (date.getMonth() === Number(month)) {
-    if (shortDays[`h${year}`]().some((e) => e.date === date.valueOf())) {
+    if (shortDays[`sd${year}`]().some((e) => e.date === date.valueOf())) {
       count++;
     }
     date.setDate(date.getDate() + 1);

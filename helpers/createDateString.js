@@ -1,8 +1,7 @@
-const createDateString = (year, month, date, name) => {
-  const obj = { date: new Date(Date.UTC(year, month, date)).valueOf(), name };
-
-  return obj;
-};
+const createDateString = (year, month, date, name) => ({
+  date: new Date(Date.UTC(year, month, date)).valueOf(),
+  name,
+});
 
 module.exports = {
   createDateString,
