@@ -1,6 +1,7 @@
 {
   "version": 2,
   "buildCommand": "npm run generate-data",
+  "includeFiles": "data/generated/**",
   "builds": [
     {
       "src": "index.js",
