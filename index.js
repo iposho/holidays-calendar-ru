@@ -1,24 +1,13 @@
 const express = require('express');
-
-const { generateMonths } = require('./helpers/generateMonths');
-const { generateMonth } = require('./helpers/generateMonth');
-const { isWorkingDay } = require('./helpers/isWorkingDay');
-const { isNotCorrectYear, isNotCorrectDay, isNotCorrectMonth } = require('./helpers/isNotCorrect');
+const path = require('path');
+const fs = require('fs');
+const { isNotCorrectYear, isNotCorrectMonth, isNotCorrectDay } = require('./helpers/isNotCorrect');
 const { getErrorMessages } = require('./helpers/getErrorMessages');
 const { availableYears } = require('./helpers/availableYears');
-const { createMainPage } = require('./helpers/createMainPage');
-const { generateHolidays } = require('./helpers/generateHolidays');
-
 const app = express();
 const port = 4000;
 
-app.get('/', (req, res) => {
-  createMainPage(res);
-});
-
-app.get('/api', (req, res) => {
-  res.status(400).json(getErrorMessages('path'));
-});
+const getDataFilePath = (year, fileName) => path.join(__dirname, 'data', 'generated', String(year), fileName);
 
 app.get('/api/calendar/', (req, res) => {
   res.status(200).json({ years: availableYears(), status: 200 });
@@ -30,8 +19,8 @@ app.get('/api/calendar/:year', (req, res) => {
   if (isNotCorrectYear(year)) {
     res.status(400).json(getErrorMessages('year'));
   } else {
-    const data = generateMonths(year);
-    res.status(200).json({ year: Number(year), months: data, status: 200 });
+    const data = JSON.parse(fs.readFileSync(getDataFilePath(year, 'months.json')));
+    res.status(200).json(data);
   }
 });
 
@@ -41,26 +30,27 @@ app.get('/api/calendar/:year/holidays', (req, res) => {
   if (isNotCorrectYear(year)) {
     res.status(400).json(getErrorMessages('year'));
   } else {
-    const data = generateHolidays(year);
-    res.status(200).json({ year: Number(year), ...data, status: 200 });
+    const data = JSON.parse(fs.readFileSync(getDataFilePath(year, 'holidays.json')));
+    res.status(200).json(data);
   }
 });
 
 app.get('/api/calendar/:year/:month', (req, res) => {
-  const { month, year } = req.params;
+  const { year, month } = req.params;
 
   if (isNotCorrectYear(year)) {
     res.status(400).json(getErrorMessages('year'));
   } else if (isNotCorrectMonth(month)) {
     res.status(400).json(getErrorMessages('month'));
   } else {
-    const data = generateMonth(year, month);
-    res.status(200).json({ year: Number(year), month: data, status: 200 });
+    const data = JSON.parse(fs.readFileSync(getDataFilePath(year, `${month}.json`)));
+    const { days, ...monthData } = data;  // Удаляем поле days из ответа
+    res.status(200).json(monthData);
   }
 });
 
 app.get('/api/calendar/:year/:month/:day', (req, res) => {
-  const { day, month, year } = req.params;
+  const { year, month, day } = req.params;
 
   if (isNotCorrectYear(year)) {
     res.status(400).json(getErrorMessages('year'));
@@ -69,12 +59,22 @@ app.get('/api/calendar/:year/:month/:day', (req, res) => {
   } else if (isNotCorrectDay(year, month, day)) {
     res.status(400).json(getErrorMessages('day'));
   } else {
-    const data = isWorkingDay(year, month, day);
-    res.status(200).json({ ...data, status: 200 });
+    const data = JSON.parse(fs.readFileSync(getDataFilePath(year, `${month}.json`)));
+
+    if (!data.days) {
+      return res.status(400).json({ error: 'Days data not found', status: 400 });
+    }
+
+    const dayData = data.days.find(d => d.date.split('T')[0] === `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
+
+    if (!dayData) {
+      return res.status(400).json({ error: 'Day data not found', status: 400 });
+    }
+
+    res.status(200).json({ year: Number(year), ...dayData, status: 200 });
   }
 });
 
 app.listen(port, () => {
-  // eslint-disable-next-line no-console
   console.info(`Server is listening on port ${port}`);
 });

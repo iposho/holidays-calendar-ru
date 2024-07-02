@@ -127,6 +127,8 @@ git clone https://github.com/iposho/holidays-calendar-ru.git
 cd holidays-calendar-ru/
 npm i
 [...]
+npm run generate-data
+[...]
 npm run dev
 ```
 <br>

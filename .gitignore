@@ -119,3 +119,5 @@ dist
 package-lock.json
 .vercel
 .env.local
+
+data/generated

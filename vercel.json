@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": null,
+  "buildCommand": "npm run generate-data",
   "builds": [
     {
       "src": "index.js",
