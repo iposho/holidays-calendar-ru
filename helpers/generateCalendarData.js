@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+
 const { generateMonths } = require('./generateMonths');
 const { generateMonth } = require('./generateMonth');
 const { generateHolidays } = require('./generateHolidays');
@@ -7,7 +8,7 @@ const { availableYears } = require('./availableYears');
 const { isWorkingDay } = require('./isWorkingDay');
 const { getDaysCount } = require('./getDaysCount');
 
-const outputDir = path.join(__dirname, '../data/generated');
+const outputDir = path.join(process.cwd(), 'data/generated');
 
 try {
   availableYears().forEach(year => {
