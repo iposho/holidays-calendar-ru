@@ -1,4 +1,7 @@
 ![Vercel](https://vercelbadge.vercel.app/api/iposho/holidays-calendar-ru?style=flat) ![GitHub Size](https://img.shields.io/github/languages/code-size/iposho/holidays-calendar-ru) ![Last Commit](https://img.shields.io/github/last-commit/iposho/holidays-calendar-ru) ![MIT LICENSE](https://img.shields.io/github/license/iposho/holidays-calendar-ru)
+
+![dalle-logo.webp](https://raw.githubusercontent.com/iposho/holidays-calendar-ru/calendar-2025/dalle-logo.webp)
+
 # Производственный календарь
 Производственные календари в формате JSON, актуальные для Российской Федерации.
 
@@ -40,7 +43,7 @@ curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/c
       "notWorkingDays": 14,
       "shortDays": 0,
       "workingHours": 136
-    },
+    }
     // February, March etc.
   ],
   "status": 200
