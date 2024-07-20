@@ -1,6 +1,13 @@
-const { createDateString } = require('../helpers/createDateString');
+import { createDateString } from '@/helpers/createDateString';
 
-const h2023 = (year = 2023) => [
+export interface Holidays {
+  date: string;
+  name: string;
+}
+
+export type HolidaysFunction = (year?: number) => Holidays[];
+
+export const h2023: HolidaysFunction = (year = 2023) => [
   createDateString(year, 0, 1, 'Новый год'),
   createDateString(year, 0, 2, 'Новый год'),
   createDateString(year, 0, 3, 'Новый год'),
@@ -20,7 +27,7 @@ const h2023 = (year = 2023) => [
   createDateString(year, 10, 6, 'День народного единства'),
 ];
 
-const h2024 = (year = 2024) => [
+export const h2024: HolidaysFunction = (year = 2024) => [
   createDateString(year, 0, 1, 'Новый год'),
   createDateString(year, 0, 2, 'Новый год'),
   createDateString(year, 0, 3, 'Новый год'),
@@ -42,7 +49,7 @@ const h2024 = (year = 2024) => [
   createDateString(year, 11, 31, 'Новый год'),
 ];
 
-module.exports = {
+export const holidays: Record<string, HolidaysFunction> = {
   h2023,
   h2024,
 };

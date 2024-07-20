@@ -1,0 +1,64 @@
+{
+  "env":{
+    "browser": true,
+    "es2021": true
+  },
+  "extends":[
+    "next/core-web-vitals",
+    "airbnb",
+    "airbnb-typescript"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "ignorePatterns": [
+    "next.config.js"
+  ],
+  "rules":{
+    "indent":[
+      "error",
+      2,
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "no-plusplus": 0,
+    "quotes":[
+      "error",
+      "single"
+    ],
+    "max-len":[
+      "error",
+      140,
+      2,
+      {
+        "ignoreComments":true,
+        "ignoreUrls":true
+      }
+    ],
+    "react/require-default-props": "off",
+    "react/function-component-definition": "off",
+    "react/prop-types": "off",
+    "react/jsx-no-useless-fragment": "off",
+    "react/jsx-props-no-spreading": "off",
+    "jsx-a11y/media-has-caption": "off",
+    "react/jsx-filename-extension": "off",
+    "react/react-in-jsx-scope": "off",
+    "linebreak-style":[
+      "error",
+      "unix"
+    ],
+    "allowImportingTsExtensions": 0,
+    "object-curly-spacing":[
+      2,
+      "always"
+    ],
+    "import/prefer-default-export": 0,
+    "import/no-extraneous-dependencies":[
+      "error",
+      {
+        "devDependencies": true
+      }
+    ]
+  }
+}
