@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://calendar.kuzyak.in/$1",
+      "permanent": true
+    }
+  ]
+}
