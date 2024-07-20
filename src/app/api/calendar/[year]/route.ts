@@ -8,7 +8,6 @@ const data = generateData();
 
 export async function generateStaticParams() {
   const years = availableYears();
-  console.log({ years });
   return years.map((year) => ({ year: year.toString() }));
 }
 
