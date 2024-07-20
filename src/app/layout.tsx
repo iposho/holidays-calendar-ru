@@ -1,6 +1,8 @@
 import { ReactNode } from 'react';
 import { Metadata } from 'next';
 
+import { Analytics } from '@vercel/analytics/react';
+
 import '../styles/global.scss';
 
 interface LayoutProps {
@@ -15,6 +17,7 @@ function Layout({ children }: LayoutProps) {
   return (
     <html lang="en">
       <body>{children}</body>
+      <Analytics />
     </html>
   );
 }
