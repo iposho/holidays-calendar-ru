@@ -1,6 +1,11 @@
 const status = 400;
 
-const getErrorMessages = (type = '') => {
+interface ErrorMessage {
+  error: string;
+  status: number;
+}
+
+export const getErrorMessages = (type: string = ''): ErrorMessage => {
   switch (type) {
     case 'year':
       return { error: 'Invalid year', status };
@@ -13,8 +18,4 @@ const getErrorMessages = (type = '') => {
     default:
       return { error: 'Unknown error', status };
   }
-};
-
-module.exports = {
-  getErrorMessages,
 };

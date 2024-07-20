@@ -1,0 +1,20 @@
+* {
+  box-sizing: border-box;
+}
+html {
+  font-size: 16px;
+}
+body {
+  padding: 30px 15px;
+  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,
+  sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
+  font-size: 1rem;
+  margin: 0;
+}
+pre {
+  display: flex;
+  overflow-x: auto;
+}
+.language-bash {
+  padding: 15px 0;
+}

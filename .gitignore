@@ -119,3 +119,7 @@ dist
 package-lock.json
 .vercel
 .env.local
+
+combineFiles.mjs
+filelist.txt
+project_code.txt
