@@ -34,6 +34,7 @@ export async function GET(req: NextRequest, { params }: { params: { year: string
     },
     date: dayData.date.toISOString(),
     isWorkingDay: dayData.isWorkingDay,
+    isShortDay: dayData.isShortDay,
     holiday: dayData.holiday,
     status: 200,
   });
