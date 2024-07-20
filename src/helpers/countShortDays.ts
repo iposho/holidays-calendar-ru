@@ -1,8 +1,14 @@
-import { sh2023, sh2024, ShortDaysFunction } from '@/data/shortDays';
+import {
+  sh2023,
+  sh2024,
+  sh2025,
+  ShortDaysFunction,
+} from '@/data/shortDays';
 
 const shortDays: Record<string, ShortDaysFunction> = {
   sh2023,
   sh2024,
+  sh2025,
 };
 
 export const countShortDays = (year: number, month: number): number => {
