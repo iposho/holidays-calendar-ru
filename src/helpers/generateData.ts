@@ -1,4 +1,5 @@
 import { generateMonths } from '@/helpers/generateMonths';
+import { availableYears } from '@/helpers/availableYears';
 import { generateHolidays } from './generateHolidays';
 
 interface YearData {
@@ -6,7 +7,7 @@ interface YearData {
   holidays: any;
 }
 
-const years = [2023, 2024];
+const years = availableYears();
 
 export const generateData = (): Record<number, YearData> => {
   const data: Record<number, YearData> = {};
