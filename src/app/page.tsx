@@ -5,6 +5,7 @@ const HomePage = async () => {
 
   return (
     <div className="container mx-auto p-4">
+      {/* eslint-disable-next-line react/no-danger */}
       <div dangerouslySetInnerHTML={{ __html: content }} />
     </div>
   );
