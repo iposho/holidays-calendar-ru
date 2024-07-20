@@ -4,7 +4,7 @@
 
 Первый доступный год — 2023, последний — 2024.
 
-Постоянная ссылка на репозиторий: [github.com/iposho/holidays-calendar-ru](https://github.com/iposho/holidays-calendar-ru#)
+Постоянная ссылка на репозиторий: [github.com/iposho/holidays-calendar-ru](https://github.com/iposho/holidays-calendar-ru#readme)
 
 ## Примеры использования
 
