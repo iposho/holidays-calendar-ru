@@ -10,7 +10,7 @@
 
 ### /api/calendar
 ```bash
-curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar"
+curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar"
 ```
 Вернет массив имеющихся в наличии календарей.
 ```json
@@ -26,7 +26,7 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 
 ### /api/calendar/:year
 ```bash
-curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023"
+curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar/2023"
 ```
 Вернет объект с годом и массивом объектов месяцев. Описание объекта месяца ниже.
 ```json
@@ -50,7 +50,7 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 
 ### /api/calendar/:year/holidays
 ```bash
-curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/holidays"
+curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar/2023/holidays"
 ```
 Возвращает праздничные и сокращенные предпраздничные дни для конкретного года.
 ```json
@@ -77,7 +77,7 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 
 ### /api/calendar/:year/:month
 ```bash
-curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/1"
+curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar/2023/1"
 ```
 Вернет объект месяца. Нумерация месяцев начинается с 1, а не с 0. Январь — месяц под номером 1, декабрь — под номером 12.
 
@@ -100,7 +100,7 @@ curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.ver
 
 ### /api/calendar/:year/:month/:day
 ```bash
-curl -H "Content-Type:application/json" -X GET "https://holidays-calendar-ru.vercel.app/api/calendar/2023/2/22"
+curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar/2023/2/22"
 ```
 Вернет объект конкретного дня.
 
