@@ -1,5 +1,5 @@
-import { h2023, h2024 } from '@/data/holidays';
-import { wh2023, wh2024 } from '@/data/workingHolidays';
+import { h2023, h2024, h2025 } from '@/data/holidays';
+import { wh2023, wh2024, wh2025 } from '@/data/workingHolidays';
 
 interface Holiday {
   date: string;
@@ -11,11 +11,13 @@ type HolidaysFunction = (year?: number) => Holiday[];
 const holidays: Record<string, HolidaysFunction> = {
   h2023,
   h2024,
+  h2025,
 };
 
 const workingHolidays: Record<string, HolidaysFunction> = {
   wh2023,
   wh2024,
+  wh2025,
 };
 
 export const countWorkingDays = (year: number, month: number): number => {

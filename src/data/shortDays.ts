@@ -21,7 +21,17 @@ export const sh2024: ShortDaysFunction = (year = 2024) => [
   createDateString(year, 10, 2, 'День народного единства'),
 ];
 
+export const sh2025: ShortDaysFunction = (year = 2025) => [
+  createDateString(year, 2, 7, 'Международный женский день'),
+  createDateString(year, 3, 30, 'День Труда'),
+  createDateString(year, 4, 8, 'День Победы'),
+  createDateString(year, 5, 11, 'День России'),
+  createDateString(year, 10, 3, 'День народного единства'),
+  createDateString(year, 11, 31, 'День народного единства'),
+];
+
 export const shortDays: Record<string, ShortDaysFunction> = {
   sh2023,
   sh2024,
+  sh2025,
 };
