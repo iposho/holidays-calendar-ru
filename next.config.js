@@ -9,6 +9,14 @@ const nextConfig = {
   env: {
     BUILD_DATE: buildDate,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'vercelbadge.vercel.app',
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;

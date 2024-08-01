@@ -15,6 +15,7 @@
     "next.config.js"
   ],
   "rules":{
+    "react/no-unescaped-entities": "warn",
     "indent":[
       "error",
       2,
@@ -59,6 +60,7 @@
       {
         "devDependencies": true
       }
-    ]
+    ],
+    "@next/next/no-img-element": "warn"
   }
 }
