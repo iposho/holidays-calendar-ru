@@ -1,18 +1,33 @@
-![Vercel](https://vercelbadge.vercel.app/api/iposho/holidays-calendar-ru?style=flat) ![GitHub Size](https://img.shields.io/github/languages/code-size/iposho/holidays-calendar-ru) ![Last Commit](https://img.shields.io/github/last-commit/iposho/holidays-calendar-ru) ![MIT LICENSE](https://img.shields.io/github/license/iposho/holidays-calendar-ru)
+![Uptimerobot](https://img.shields.io/uptimerobot/ratio/7/m797301234-a06cf748375429b73d2bee31) ![Vercel](https://vercelbadge.vercel.app/api/iposho/holidays-calendar-ru?style=flat) ![GitHub Size](https://img.shields.io/github/languages/code-size/iposho/holidays-calendar-ru) ![Last Commit](https://img.shields.io/github/last-commit/iposho/holidays-calendar-ru) ![MIT LICENSE](https://img.shields.io/github/license/iposho/holidays-calendar-ru)
 # Производственный календарь
-Производственные календари в формате JSON, актуальные для Российской Федерации.
+API предоставляет производственные календари в формате JSON, актуальные для Российской Федерации. Доступные годы: с 2023 по 2024.
 
-Первый доступный год — 2023, последний — 2024.
+Ссылка на репозиторий: [GitHub - holidays-calendar-ru](https://github.com/iposho/holidays-calendar-ru)
 
-Постоянная ссылка на репозиторий: [github.com/iposho/holidays-calendar-ru](https://github.com/iposho/holidays-calendar-ru#readme)
+## Содержание
+- [API Эндпоинты](#api-эндпоинты)
+  - [Получить все доступные календари](#получить-все-доступные-календари)
+  - [Получить календарь на конкретный год](#получить-календарь-на-конкретный-год)
+  - [Получить праздничные и сокращенные дни на конкретный год](#получить-праздничные-и-сокращенные-дни-на-конкретный-год)
+  - [Получить календарь на конкретный месяц](#получить-календарь-на-конкретный-месяц)
+  - [Получить информацию о конкретном дне](#получить-информацию-о-конкретном-дне)
+- [Локальная установка](#локальная-установка)
+- [Как внести свой вклад](#как-внести-свой-вклад)
+- [Лицензия](#лицензия)
 
-## Примеры использования
 
-### /api/calendar
-```bash
+## API Эндпоинты
+
+### Получить все доступные календари
+
+`GET /api/calendar`
+
+```sh
 curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar"
 ```
-Вернет массив имеющихся в наличии календарей.
+
+#### Ответ
+
 ```json
 {
   "years": [
@@ -22,13 +37,17 @@ curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/c
   "status": 200
 }
 ```
-<br>
 
-### /api/calendar/:year
-```bash
+### Получить календарь на конкретный год
+
+`GET /api/calendar/:year`
+
+```sh
 curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar/2023"
 ```
-Вернет объект с годом и массивом объектов месяцев. Описание объекта месяца ниже.
+
+#### Ответ
+
 ```json
 {
   "year": 2023,
@@ -40,19 +59,23 @@ curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/c
       "notWorkingDays": 14,
       "shortDays": 0,
       "workingHours": 136
-    },
-    // February, March etc.
+    }
+    // ... Другие месяцы
   ],
   "status": 200
 }
 ```
-<br>
 
-### /api/calendar/:year/holidays
-```bash
+### Получить праздничные и сокращенные дни на конкретный год
+
+`GET /api/calendar/:year/holidays`
+
+```sh
 curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar/2023/holidays"
 ```
-Возвращает праздничные и сокращенные предпраздничные дни для конкретного года.
+
+#### Ответ
+
 ```json
 {
   "year": 2023,
@@ -61,27 +84,29 @@ curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/c
       "date": "2023-01-01T00:00:00.000Z",
       "name": "Новый год"
     }
-    // etc
+    // ... Другие праздники
   ],
   "shortDays": [
     {
       "date": "2023-02-22T00:00:00.000Z",
       "name": "День защитника Отечества"
     }
-    //etc
+    // ... Другие сокращенные дни
   ],
   "status": 200
 }
 ```
-<br>
 
-### /api/calendar/:year/:month
-```bash
+### Получить календарь на конкретный месяц
+
+`GET /api/calendar/:year/:month`
+
+```sh
 curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar/2023/1"
 ```
-Вернет объект месяца. Нумерация месяцев начинается с 1, а не с 0. Январь — месяц под номером 1, декабрь — под номером 12.
 
-Объект содержит id месяца, имя, количество рабочих, нерабочих и коротких дней, а также рабочих часов при восьмичасовой рабочей неделе.
+#### Ответ
+
 ```json
 {
   "year": 2023,
@@ -96,15 +121,17 @@ curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/c
   "status": 200
 }
 ```
-<br>
 
-### /api/calendar/:year/:month/:day
-```bash
+### Получить информацию о конкретном дне
+
+`GET /api/calendar/:year/:month/:day`
+
+```sh
 curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar/2023/2/22"
 ```
-Вернет объект конкретного дня.
 
-Объект содержит информацию о месяце, точную дату, признак рабочего/нерабочего/сокращенного, название праздника, если день праздничный или предпраздничный.
+#### Ответ
+
 ```json
 {
   "year": 2023,
@@ -136,7 +163,7 @@ npm run dev
 2. Создайте ветку своей фичи (`git checkout -b my-new-feature`).
 3. Закоммитьте изменения (`git commit -am 'Add some feature'`).
 4. Запушьте изменения в репозиторий (`git push origin my-new-feature`).
-5. Создайте новый пулл-реквест в ветку development.
+5. Создайте новый пулл-реквест в ветку develop.
 <br>
 
 ## Лицензия
