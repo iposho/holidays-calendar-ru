@@ -11,68 +11,32 @@
 }
 
 .header {
-
+  .title {
+    width: 100%;
+    max-width: 400px;
+    line-height: 1.25;
+  }
 }
 
 .content {
   display: flex;
   flex-direction: column;
 
-  .section {
-    width: 100%;
-    margin-bottom: 1.5rem;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-
-    @media (max-width: 700px) {
-      max-width: 100%;
-    }
-  }
-
   .description {
     display: flex;
     flex-direction: column;
-    margin-bottom: 1.5rem;
-  }
-
-
-  .contents {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    max-width: fit-content;
   }
 
   .links {
-    display: flex;
-    flex-direction: column;
-    padding: 0 0 0 1.5rem;
-    list-style-type: '— ';
-    gap: .75rem;
-    margin: 0;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
 
-    li {
-      font-size: 1.25rem;
+    a {
+      font-size: 1.75rem;
     }
-  }
-
-  .endpoint {
-    margin-bottom: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .example {
-    margin-bottom: 1.5rem !important;
-  }
-
-  .contribution {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    font-size: 1.25rem;
-    padding-left: 2rem;
-    margin: 0 0 .75rem 0;
   }
 }
 

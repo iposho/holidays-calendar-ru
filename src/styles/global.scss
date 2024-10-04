@@ -57,6 +57,17 @@ h4 {
   }
 }
 
+// Links
+
+a {
+  color: #3F51B5;
+  text-underline-offset: .25rem;
+
+  &:hover {
+    color: darkred;
+  }
+}
+
 // Text
 
 p {
