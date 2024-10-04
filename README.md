@@ -1,6 +1,6 @@
 ![Uptimerobot](https://img.shields.io/uptimerobot/ratio/7/m797301234-a06cf748375429b73d2bee31) ![Vercel](https://vercelbadge.vercel.app/api/iposho/holidays-calendar-ru?style=flat) ![GitHub Size](https://img.shields.io/github/languages/code-size/iposho/holidays-calendar-ru) ![Last Commit](https://img.shields.io/github/last-commit/iposho/holidays-calendar-ru) ![MIT LICENSE](https://img.shields.io/github/license/iposho/holidays-calendar-ru)
 # Производственный календарь
-API предоставляет производственные календари в формате JSON, актуальные для Российской Федерации. Доступные годы: с 2023 по 2024.
+API предоставляет производственные календари в формате JSON, актуальные для Российской Федерации. Доступные годы: с 2023 по 2025.
 
 Ссылка на репозиторий: [GitHub - holidays-calendar-ru](https://github.com/iposho/holidays-calendar-ru)
 
