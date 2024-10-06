@@ -31,11 +31,14 @@
   }
 
   .links {
-    margin-top: 1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 
     a {
       font-size: 1.75rem;
+
+      @media (max-width: 700px) {
+        font-size: 1.25rem;
+      }
     }
   }
 }

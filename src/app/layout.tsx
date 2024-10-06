@@ -5,7 +5,7 @@ import { IBM_Plex_Sans } from 'next/font/google';
 
 import { Analytics } from '@vercel/analytics/react';
 
-import '../styles/global.scss';
+import '@/styles/global.scss';
 
 interface LayoutProps {
   children: ReactNode;
@@ -14,6 +14,11 @@ interface LayoutProps {
 export const metadata: Metadata = {
   title: 'Производственный календарь API',
   description: 'Производственные календари РФ (2023—2025) в формате JSON. Простой API для получения данных.',
+  metadataBase: new URL('https://calendar.kuzyak.in'),
+  openGraph: {
+    url: new URL('https://calendar.kuzyak.in'),
+    type: 'website',
+  },
 };
 
 const ibmPlexSans = IBM_Plex_Sans({
