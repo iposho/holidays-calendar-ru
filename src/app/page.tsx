@@ -17,7 +17,7 @@ export default function Homepage() {
         </div>
 
         <section className={css.links}>
-          <a className={css.link} href="https://github.com/iposho/holidays-calendar-ru?tab=readme-ov-file#примеры-запросов">📔 Документация</a>
+          <a className={css.link} href="https://github.com/iposho/holidays-calendar-ru?tab=readme-ov-file#как-получить">📔 Документация</a>
         </section>
       </div>
       <footer className={css.footer}>

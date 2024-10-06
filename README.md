@@ -84,7 +84,7 @@ GET /api/calendar/:year/holidays
 curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar/2023/holidays"
 ```
 
-Возвращает праздничные и сокращенные предпраздничные дни для конкретного года.
+Возвращаются праздничные и сокращенные предпраздничные дни для конкретного года.
 
 #### Ответ
 
@@ -150,7 +150,7 @@ GET /api/calendar/:year/:month/:day
 curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar/2023/2/22"
 ```
 
-Вернет объект конкретного дня.
+Вернется объект конкретного дня.
 
 Объект содержит информацию о месяце, точную дату, признак рабочего/нерабочего/сокращенного, название праздника, если день праздничный или предпраздничный.
 
