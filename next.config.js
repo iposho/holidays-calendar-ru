@@ -7,6 +7,7 @@ const buildDate = new Date().toISOString();
 const nextConfig = {
   compress: true,
   env: {
+    YANDEX_METRIKA_ID: process.env.YANDEX_METRIKA_ID,
     BUILD_DATE: buildDate,
   },
   images: {

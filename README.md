@@ -1,6 +1,8 @@
 ![Uptimerobot](https://img.shields.io/uptimerobot/ratio/7/m797301234-a06cf748375429b73d2bee31) ![Vercel](https://vercelbadge.vercel.app/api/iposho/holidays-calendar-ru?style=flat) ![GitHub Size](https://img.shields.io/github/languages/code-size/iposho/holidays-calendar-ru) ![Last Commit](https://img.shields.io/github/last-commit/iposho/holidays-calendar-ru) ![MIT LICENSE](https://img.shields.io/github/license/iposho/holidays-calendar-ru)
 # Производственный календарь 🇷🇺
 
+<img src="./src/app/opengraph-image.png" />
+
 ## TL;DR
 Производственные календари РФ (2023—2025) в формате JSON. Простой API для получения данных.
 
