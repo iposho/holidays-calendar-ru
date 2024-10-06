@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import { IBM_Plex_Sans } from 'next/font/google';
 
 import { Analytics } from '@vercel/analytics/react';
+import { Metrika } from '@/components/metrika';
 
 import '@/styles/global.scss';
 
@@ -27,11 +28,21 @@ const ibmPlexSans = IBM_Plex_Sans({
   style: ['normal', 'italic'],
 });
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 function Layout({ children }: LayoutProps) {
   return (
     <html lang="en" className={ibmPlexSans.className}>
       <body>{children}</body>
-      <Analytics />
+      {
+        isProduction
+        && (
+          <>
+            <Analytics />
+            <Metrika />
+          </>
+        )
+      }
     </html>
   );
 }
