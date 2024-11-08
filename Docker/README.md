@@ -2,7 +2,7 @@
 
 ```bash
 git clone https://github.com/iposho/holidays-calendar-ru.git app
-mv ./Docker/Dockerfile ./Dockerfile
+mv ./app/Docker/Dockerfile ./Dockerfile
 docker build . -t holidays-calendar:0.1
 docker run -p 5000:5000 holidays-calendar:0.1
 ```
