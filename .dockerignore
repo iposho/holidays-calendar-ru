@@ -1,0 +1,6 @@
+# FILES
+.gitignore
+README.md
+LICENSE
+.env.example
+.editorconfig
