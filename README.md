@@ -184,6 +184,18 @@ npm run dev
 ```
 <br>
 
+## Сбора в контейнер
+```bash
+git clone https://github.com/iposho/holidays-calendar-ru.git
+cd holidays-calendar-ru/
+#При необходимости использовании Яндекс Метрики, указать в .env ID YANDEX_METRIKA_ID=
+cp .env.example .env 
+docker build . -t holidays-calendar
+docker run -p 5000:5000 holidays-calendar
+#либо с использованием Яндекс Метрики
+docker run -p 5000:5000 -e YANDEX_METRIKA_ID=XXX-XXX-XXX holidays-calendar
+```
+
 ## Как внести свой вклад
 1. [Форкните](https://github.com/iposho/holidays-calendar-ru/fork) этот репозиторий.
 2. Создайте ветку своей фичи (`git checkout -b my-new-feature`).
