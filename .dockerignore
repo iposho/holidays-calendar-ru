@@ -4,3 +4,12 @@ README.md
 LICENSE
 .env.example
 .editorconfig
+Containerfile*
+README.md
+dist
+node_modules
+test
+*.log
+.dockerignore
+.taprc
+.npmrc
