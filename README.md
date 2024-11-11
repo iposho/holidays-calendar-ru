@@ -14,6 +14,7 @@
   - [Календарь на месяц](#календарь-на-месяц)
   - [Информацию о конкретном дне](#информацию-о-конкретном-дне)
 - [Локальная установка](#локальная-установка)
+- [Сборка в Docker-контейнер](#сборка-в-docker-контейнер)
 - [Как внести свой вклад](#как-внести-свой-вклад)
 - [Лицензия](#лицензия)
 
@@ -184,7 +185,7 @@ npm run dev
 ```
 <br>
 
-## Сбора в контейнер
+## Сборка в Docker-контейнер
 ```bash
 git clone https://github.com/iposho/holidays-calendar-ru.git
 cd holidays-calendar-ru/
@@ -195,6 +196,7 @@ docker run -p 5000:5000 holidays-calendar
 #либо с использованием Яндекс Метрики
 docker run -p 5000:5000 -e YANDEX_METRIKA_ID=XXX-XXX-XXX holidays-calendar
 ```
+<br>
 
 ## Как внести свой вклад
 1. [Форкните](https://github.com/iposho/holidays-calendar-ru/fork) этот репозиторий.
