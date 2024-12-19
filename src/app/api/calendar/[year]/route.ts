@@ -15,8 +15,17 @@ export async function GET(req: NextRequest, { params }: { params: { year: string
   const { year } = params;
 
   if (isNotCorrectYear(Number(year))) {
-    return NextResponse.json(getErrorMessages('year'), { status: 400 });
+    const error = getErrorMessages('year');
+    return NextResponse.json(error, { status: error.status });
   }
+
+  const yearData = data[Number(year)];
+
+  if (!yearData) {
+    const error = getErrorMessages('not_found');
+    return NextResponse.json(error, { status: error.status });
+  }
+
   return NextResponse.json({
     year: Number(year),
     months: data[Number(year)].months,

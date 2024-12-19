@@ -1,5 +1,4 @@
-import { holidays } from '@/data/holidays';
-import { shortDays } from '@/data/shortDays';
+import { getHolidays, getShortDays } from '@/utils/holidaysLoader';
 
 interface Holiday {
   date: Date;
@@ -12,12 +11,12 @@ interface HolidaysData {
 }
 
 export const generateHolidays = (year: number): HolidaysData => {
-  const holidaysArray: Holiday[] = holidays[`h${year}`]().map((i: { date: string; name: string }) => ({
+  const holidaysArray: Holiday[] = getHolidays(year).map((i) => ({
     date: new Date(i.date),
     name: i.name,
   }));
 
-  const shortDaysArray: Holiday[] = shortDays[`sh${year}`]().map((i: { date: string; name: string }) => ({
+  const shortDaysArray: Holiday[] = getShortDays(year).map((i) => ({
     date: new Date(i.date),
     name: i.name,
   }));

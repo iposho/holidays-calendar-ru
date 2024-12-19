@@ -3,29 +3,35 @@ import { isNotCorrectDay, isNotCorrectMonth, isNotCorrectYear } from '@/helpers/
 import { getErrorMessages } from '@/helpers/getErrorMessages';
 import { isWorkingDay } from '@/helpers/isWorkingDay';
 
-export async function generateStaticParams() {
-  const years = [2023, 2024];
-  const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
-  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
+import { generateStaticParams as generateParams } from '@/utils/generateStaticParams';
 
-  return years.flatMap((year) => months.flatMap((month) => days.map((day) => ({
-    year: year.toString(),
-    month,
-    day,
-  }))));
+export async function generateStaticParams() {
+  return generateParams([2023, 2024], true, true);
 }
 
 export async function GET(req: NextRequest, { params }: { params: { year: string, month: string, day: string } }) {
   const { year, month, day } = params;
 
   if (isNotCorrectYear(Number(year))) {
-    return NextResponse.json(getErrorMessages('year'), { status: 400 });
-  } if (isNotCorrectMonth(Number(month))) {
-    return NextResponse.json(getErrorMessages('month'), { status: 400 });
-  } if (isNotCorrectDay(Number(year), Number(month), Number(day))) {
-    return NextResponse.json(getErrorMessages('day'), { status: 400 });
+    const error = getErrorMessages('year');
+    return NextResponse.json(error, { status: error.status });
   }
+  if (isNotCorrectMonth(Number(month))) {
+    const error = getErrorMessages('month');
+    return NextResponse.json(error, { status: error.status });
+  }
+  if (isNotCorrectDay(Number(year), Number(month), Number(day))) {
+    const error = getErrorMessages('day');
+    return NextResponse.json(error, { status: error.status });
+  }
+
   const dayData = isWorkingDay(Number(year), Number(month), Number(day));
+
+  if (!dayData) {
+    const error = getErrorMessages('not_found');
+    return NextResponse.json(error, { status: error.status });
+  }
+
   return NextResponse.json({
     year: Number(year),
     month: {
