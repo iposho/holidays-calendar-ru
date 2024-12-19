@@ -17,9 +17,9 @@ const isWeekend = (date: Date): boolean => {
   return day === 0 || day === 6;
 };
 
-const isWeekendWorking = (date: Date): boolean => {
+const isWeekendWorking = (date: Date, workingHolidays: { date: string }[]): boolean => {
   const day = date.getUTCDay();
-  return day === 6 && getWorkingHolidays(date.getUTCFullYear()).some(
+  return day === 6 && workingHolidays.some(
     (e) => new Date(e.date).valueOf() === date.valueOf(),
   );
 };
@@ -28,8 +28,13 @@ export const isWorkingDay = (year: number, month: number, day: number): WorkingD
   const date = new Date(Date.UTC(year, month - 1, day));
   const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
 
-  const isHoliday = getHolidays(year).some((e) => new Date(e.date).valueOf() === date.valueOf());
-  const isShortDay = getShortDays(year).some((e) => new Date(e.date).valueOf() === date.valueOf());
+  const holidays = getHolidays(year) || [];
+  const shortDays = getShortDays(year) || [];
+  const workingHolidays = getWorkingHolidays(year) || [];
+
+  const isHoliday = holidays.some((e) => new Date(e.date).valueOf() === date.valueOf());
+  const isShortDay = shortDays.some((e) => new Date(e.date).valueOf() === date.valueOf());
+  const isWorkingHoliday = isWeekendWorking(date, workingHolidays);
 
   const result: WorkingDayResult = {
     year: Number(year),
@@ -38,16 +43,16 @@ export const isWorkingDay = (year: number, month: number, day: number): WorkingD
       id: month - 1,
     },
     date,
-    isWorkingDay: !isHoliday && (isShortDay || (!isWeekend(date) || isWeekendWorking(date))),
+    isWorkingDay: !isHoliday && (!isWeekend(date) || isWorkingHoliday),
   };
 
   if (isHoliday) {
-    const holiday = getHolidays(year).find((el) => new Date(el.date).valueOf() === date.valueOf());
+    const holiday = holidays.find((el) => new Date(el.date).valueOf() === date.valueOf());
     if (holiday) result.holiday = holiday.name;
   }
 
   if (isShortDay) {
-    const shortDay = getShortDays(year).find((el) => new Date(el.date).valueOf() === date.valueOf());
+    const shortDay = shortDays.find((el) => new Date(el.date).valueOf() === date.valueOf());
     if (shortDay) {
       result.isShortDay = true;
       result.holiday = shortDay.name;

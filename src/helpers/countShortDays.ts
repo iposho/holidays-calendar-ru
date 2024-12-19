@@ -4,8 +4,10 @@ export const countShortDays = (year: number, month: number): number => {
   let count = 0;
   const date = new Date(Date.UTC(year, month, 1));
 
+  const shortDays = getShortDays(year) || [];
+
   while (date.getUTCMonth() === month) {
-    if (getShortDays(year).some((e) => new Date(e.date).valueOf() === date.valueOf())) {
+    if (shortDays.some((e) => new Date(e.date).valueOf() === date.valueOf())) {
       count++;
     }
     date.setUTCDate(date.getUTCDate() + 1);
