@@ -1,4 +1,4 @@
-import { LAST_AVAILABLE_YEAR, YEAR_SINCE } from '@/data/global';
+import { LAST_AVAILABLE_YEAR, YEAR_SINCE } from '@/utils/holidaysLoader';
 
 export const availableYears = (): number[] => {
   const startYear = YEAR_SINCE;
