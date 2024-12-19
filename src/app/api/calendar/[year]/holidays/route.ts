@@ -3,12 +3,13 @@ import { generateData } from '@/helpers/generateData';
 import { isNotCorrectYear } from '@/helpers/isNotCorrect';
 import { getErrorMessages } from '@/helpers/getErrorMessages';
 
-const data = generateData();
+import { generateStaticParams as generateParams } from '@/utils/generateStaticParams';
 
 export async function generateStaticParams() {
-  const years = [2023, 2024];
-  return years.map((year) => ({ year: year.toString() }));
+  return generateParams([2023, 2024]);
 }
+
+const data = generateData();
 
 export async function GET(req: NextRequest, { params }: { params: { year: string } }) {
   const { year } = params;

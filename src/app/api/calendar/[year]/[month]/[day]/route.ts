@@ -3,16 +3,10 @@ import { isNotCorrectDay, isNotCorrectMonth, isNotCorrectYear } from '@/helpers/
 import { getErrorMessages } from '@/helpers/getErrorMessages';
 import { isWorkingDay } from '@/helpers/isWorkingDay';
 
-export async function generateStaticParams() {
-  const years = [2023, 2024];
-  const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
-  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
+import { generateStaticParams as generateParams } from '@/utils/generateStaticParams';
 
-  return years.flatMap((year) => months.flatMap((month) => days.map((day) => ({
-    year: year.toString(),
-    month,
-    day,
-  }))));
+export async function generateStaticParams() {
+  return generateParams([2023, 2024], true, true);
 }
 
 export async function GET(req: NextRequest, { params }: { params: { year: string, month: string, day: string } }) {

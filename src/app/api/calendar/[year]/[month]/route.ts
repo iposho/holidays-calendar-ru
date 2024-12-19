@@ -3,16 +3,12 @@ import { generateData } from '@/helpers/generateData';
 import { isNotCorrectMonth, isNotCorrectYear } from '@/helpers/isNotCorrect';
 import { getErrorMessages } from '@/helpers/getErrorMessages';
 
+import { generateStaticParams as generateParams } from '@/utils/generateStaticParams';
+
 const data = generateData();
 
 export async function generateStaticParams() {
-  const years = [2023, 2024];
-  const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
-
-  return years.flatMap((year) => months.map((month) => ({
-    year: year.toString(),
-    month,
-  })));
+  return generateParams([2023, 2024], true);
 }
 
 export async function GET(req: NextRequest, { params }: { params: { year: string, month: string } }) {
