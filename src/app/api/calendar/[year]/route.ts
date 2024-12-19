@@ -4,21 +4,28 @@ import { isNotCorrectYear } from '@/helpers/isNotCorrect';
 import { getErrorMessages } from '@/helpers/getErrorMessages';
 import { availableYears } from '@/helpers/availableYears';
 
-import { generateStaticParams as generateParams } from '@/utils/generateStaticParams';
+const data = generateData();
 
 export async function generateStaticParams() {
   const years = availableYears();
-  return generateParams(years);
+  return years.map((year) => ({ year: year.toString() }));
 }
-
-const data = generateData();
 
 export async function GET(req: NextRequest, { params }: { params: { year: string } }) {
   const { year } = params;
 
   if (isNotCorrectYear(Number(year))) {
-    return NextResponse.json(getErrorMessages('year'), { status: 400 });
+    const error = getErrorMessages('year');
+    return NextResponse.json(error, { status: error.status });
   }
+
+  const yearData = data[Number(year)];
+
+  if (!yearData) {
+    const error = getErrorMessages('not_found');
+    return NextResponse.json(error, { status: error.status });
+  }
+
   return NextResponse.json({
     year: Number(year),
     months: data[Number(year)].months,

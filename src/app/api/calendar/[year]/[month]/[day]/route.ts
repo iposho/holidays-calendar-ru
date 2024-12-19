@@ -13,13 +13,25 @@ export async function GET(req: NextRequest, { params }: { params: { year: string
   const { year, month, day } = params;
 
   if (isNotCorrectYear(Number(year))) {
-    return NextResponse.json(getErrorMessages('year'), { status: 400 });
-  } if (isNotCorrectMonth(Number(month))) {
-    return NextResponse.json(getErrorMessages('month'), { status: 400 });
-  } if (isNotCorrectDay(Number(year), Number(month), Number(day))) {
-    return NextResponse.json(getErrorMessages('day'), { status: 400 });
+    const error = getErrorMessages('year');
+    return NextResponse.json(error, { status: error.status });
   }
+  if (isNotCorrectMonth(Number(month))) {
+    const error = getErrorMessages('month');
+    return NextResponse.json(error, { status: error.status });
+  }
+  if (isNotCorrectDay(Number(year), Number(month), Number(day))) {
+    const error = getErrorMessages('day');
+    return NextResponse.json(error, { status: error.status });
+  }
+
   const dayData = isWorkingDay(Number(year), Number(month), Number(day));
+
+  if (!dayData) {
+    const error = getErrorMessages('not_found');
+    return NextResponse.json(error, { status: error.status });
+  }
+
   return NextResponse.json({
     year: Number(year),
     month: {

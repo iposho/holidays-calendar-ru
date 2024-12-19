@@ -1,25 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { generateData } from '@/helpers/generateData';
-import { isNotCorrectMonth, isNotCorrectYear } from '@/helpers/isNotCorrect';
 import { getErrorMessages } from '@/helpers/getErrorMessages';
-
-import { generateStaticParams as generateParams } from '@/utils/generateStaticParams';
+import { isNotCorrectMonth, isNotCorrectYear } from '@/helpers/isNotCorrect';
+import { NextRequest, NextResponse } from 'next/server';
 
 const data = generateData();
 
-export async function generateStaticParams() {
-  return generateParams([2023, 2024], true);
-}
-
-export async function GET(req: NextRequest, { params }: { params: { year: string, month: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { year: string; month: string } }) {
   const { year, month } = params;
 
   if (isNotCorrectYear(Number(year))) {
-    return NextResponse.json(getErrorMessages('year'), { status: 400 });
-  } if (isNotCorrectMonth(Number(month))) {
-    return NextResponse.json(getErrorMessages('month'), { status: 400 });
+    const error = getErrorMessages('year');
+    return NextResponse.json(error, { status: error.status });
   }
-  const monthData = data[Number(year)].months[Number(month) - 1];
+  if (isNotCorrectMonth(Number(month))) {
+    const error = getErrorMessages('month');
+    return NextResponse.json(error, { status: error.status });
+  }
+
+  const monthData = data[Number(year)]?.months[Number(month) - 1];
+
+  if (!monthData) {
+    const error = getErrorMessages('not_found');
+    return NextResponse.json(error, { status: error.status });
+  }
+
   return NextResponse.json({
     year: Number(year),
     month: monthData,

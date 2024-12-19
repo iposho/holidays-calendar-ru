@@ -1,5 +1,3 @@
-const status = 400;
-
 interface ErrorMessage {
   error: string;
   status: number;
@@ -8,14 +6,14 @@ interface ErrorMessage {
 export const getErrorMessages = (type: string = ''): ErrorMessage => {
   switch (type) {
     case 'year':
-      return { error: 'Invalid year', status };
+      return { error: 'Invalid year', status: 422 };
     case 'month':
-      return { error: 'Invalid month', status };
+      return { error: 'Invalid month', status: 422 };
     case 'day':
-      return { error: 'Invalid day', status };
-    case 'path':
-      return { error: 'Invalid API path', status };
+      return { error: 'Invalid day', status: 422 };
+    case 'not_found':
+      return { error: 'Resource not found', status: 404 };
     default:
-      return { error: 'Unknown error', status };
+      return { error: 'Unknown error', status: 400 };
   }
 };

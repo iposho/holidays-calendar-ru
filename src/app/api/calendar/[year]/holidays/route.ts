@@ -15,13 +15,15 @@ export async function GET(req: NextRequest, { params }: { params: { year: string
   const { year } = params;
 
   if (isNotCorrectYear(Number(year))) {
-    return NextResponse.json(getErrorMessages('year'), { status: 400 });
+    const error = getErrorMessages('year');
+    return NextResponse.json(error, { status: error.status });
   }
 
   const yearData = data[Number(year)];
 
   if (!yearData) {
-    return NextResponse.json(getErrorMessages('year'), { status: 400 });
+    const error = getErrorMessages('not_found');
+    return NextResponse.json(error, { status: error.status });
   }
 
   const holidays = yearData.holidays.holidays.map((holiday: { date: string; name: string }) => ({
