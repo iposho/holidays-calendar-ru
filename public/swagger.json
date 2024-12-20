@@ -1,0 +1,396 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Производственный календарь РФ API",
+    "version": "1.0.0",
+    "description": "API для получения производственных календарей РФ."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Локальный сервер"
+    },
+    {
+      "url": "https://calendar.kuzyak.in",
+      "description": "Основной сервер"
+    }
+  ],
+  "paths": {
+    "/api/calendar": {
+      "get": {
+        "summary": "Получить список доступных календарей",
+        "description": "Возвращает список доступных годов.",
+        "responses": {
+          "200": {
+            "description": "Список годов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/YearList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Неизвестная ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calendar/{year}": {
+      "get": {
+        "summary": "Получить календарь на год",
+        "description": "Возвращает объект с годом и массивом объектов месяцев.",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "path",
+            "required": true,
+            "description": "Год для получения данных",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Календарь на указанный год",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/YearlyCalendar"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Неверный год",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ресурс не найден",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Неизвестная ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calendar/{year}/holidays": {
+      "get": {
+        "summary": "Получить праздничные и сокращенные дни на год",
+        "description": "Возвращает праздничные и сокращенные предпраздничные дни для конкретного года.",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "path",
+            "required": true,
+            "description": "Год для получения праздников",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Праздники и сокращенные дни на указанный год",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HolidaysResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Неверный год",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ресурс не найден",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Неизвестная ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calendar/{year}/{month}": {
+      "get": {
+        "summary": "Получить календарь на месяц",
+        "description": "Возвращает объект месяца с информацией о рабочих, нерабочих и коротких днях, а также рабочих часах.",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "path",
+            "required": true,
+            "description": "Год для получения данных",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "month",
+            "in": "path",
+            "required": true,
+            "description": "Номер месяца (1-12)",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 12 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Календарь на указанный месяц",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonthlyCalendar"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Неверный месяц",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ресурс не найден",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Неизвестная ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calendar/{year}/{month}/{day}": {
+      "get": {
+        "summary": "Получить информацию о конкретном дне",
+        "description": "Возвращает объект конкретного дня с информацией о рабочем дне, сокращенном дне и названии праздника, если применимо.",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "path",
+            "required": true,
+            "description": "Год для получения данных",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "month",
+            "in": "path",
+            "required": true,
+            "description": "Номер месяца (1-12)",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 12 }
+          },
+          {
+            "name": "day",
+            "in": "path",
+            "required": true,
+            "description": "День месяца (1-31)",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 31 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Информация о конкретном дне",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DayInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Неверный год, месяц или день",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ресурс не найден",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Неизвестная ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "YearList": {
+        "type": "object",
+        "properties": {
+          "years": {
+            "type": "array",
+            "items": { "type": "integer" }
+          },
+          "status": { "type": "integer" }
+        }
+      },
+      "YearlyCalendar": {
+        "type": "object",
+        "properties": {
+          "year": { "type": "integer" },
+          "months": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Month"
+            }
+          },
+          "status": { "type": "integer" }
+        }
+      },
+      "Month": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "workingDays": { "type": "integer" },
+          "notWorkingDays": { "type": "integer" },
+          "shortDays": { "type": "integer" },
+          "workingHours": { "type": "integer" }
+        }
+      },
+      "HolidaysResponse": {
+        "type": "object",
+        "properties": {
+          "year": { "type": "integer" },
+          "holidays": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Holiday"
+            }
+          },
+          "shortDays": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Holiday"
+            }
+          },
+          "status": { "type": "integer" }
+        }
+      },
+      "Holiday": {
+        "type": "object",
+        "properties": {
+          "date": { "type": "string", "format": "date" },
+          "name": { "type": "string" }
+        }
+      },
+      "MonthlyCalendar": {
+        "type": "object",
+        "properties": {
+          "year": { "type": "integer" },
+          "month": {
+            "$ref": "#/components/schemas/Month"
+          },
+          "status": { "type": "integer" }
+        }
+      },
+      "DayInfo": {
+        "type": "object",
+        "properties": {
+          "year": { "type": "integer" },
+          "month": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "id": { "type": "integer" }
+            }
+          },
+          "date": { "type": "string", "format": "date" },
+          "isWorkingDay": { "type": "boolean" },
+          "isShortday": { "type": "boolean" },
+          "holiday": { "type": "string" },
+          "status": { "type": "integer" }
+        }
+      },
+      "ErrorMessage": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" },
+          "status": { "type": "integer" }
+        }
+      }
+    }
+  }
+}
