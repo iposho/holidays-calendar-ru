@@ -6,8 +6,6 @@ import { fetchLocalReadme } from '@/utils/readmeFetcher';
 
 import packageJson from '../../package.json';
 
-import packageJson from '../../package.json';
-
 import css from './page.module.scss';
 
 export default async function HomePage() {
