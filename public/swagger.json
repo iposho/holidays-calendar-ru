@@ -7,12 +7,12 @@
   },
   "servers": [
     {
-      "url": "http://localhost:5000",
-      "description": "Локальный сервер"
-    },
-    {
       "url": "https://calendar.kuzyak.in",
       "description": "Основной сервер"
+    },
+    {
+      "url": "http://localhost:5000",
+      "description": "Локальный сервер"
     }
   ],
   "paths": {
