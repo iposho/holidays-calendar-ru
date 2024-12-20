@@ -2,7 +2,9 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
-import { fetchLocalReadme } from '@/utils/ReadmeFetcher';
+import { fetchLocalReadme } from '@/utils/readmeFetcher';
+
+import packageJson from '../../package.json';
 
 import packageJson from '../../package.json';
 
