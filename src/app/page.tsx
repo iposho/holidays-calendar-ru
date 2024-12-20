@@ -2,7 +2,9 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
-import { fetchLocalReadme } from '@/utils/ReadmeFetcher';
+import { fetchLocalReadme } from '@/utils/readmeFetcher';
+
+import packageJson from '../../package.json';
 
 import css from './page.module.scss';
 
@@ -26,7 +28,7 @@ export default async function HomePage() {
             components={{
               // eslint-disable-next-line react/no-unstable-nested-components
               img: ({ node, ...props }) => (
-                <img {...props} alt={props.alt || 'Изображение'} />
+                <img {...props} alt={props.alt || ''} />
               ),
             }}
           >
@@ -42,7 +44,16 @@ export default async function HomePage() {
             {new Date().getFullYear()}
           </span>
           <span>
-            <a href="https://kuzyak.in">Павел Кузякин</a>
+            <a href="https://kuzyak.in">
+              Павел Кузякин
+            </a>
+          </span>
+        </div>
+        <div className={css.version}>
+          <span>
+            <a href="https://github.com/iposho/holidays-calendar-ru">
+              {packageJson?.version}
+            </a>
           </span>
         </div>
       </footer>

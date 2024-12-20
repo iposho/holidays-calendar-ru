@@ -51,9 +51,7 @@
     "react-dom": "^18.3.1",
     "react-markdown": "^9.0.1",
     "rehype-highlight": "^7.0.1",
-    "remark": "^15.0.1",
     "remark-gfm": "^4.0.0",
-    "remark-html": "^16.0.1",
     "sass": "^1.77.8",
     "swagger-ui-react": "^5.18.2",
     "typescript": "^5.5.3"

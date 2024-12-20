@@ -89,15 +89,24 @@
 
 
 .footer {
-  flex-direction: column;
+  flex-direction: row;
   display: flex;
   padding: 2.5rem 0 1rem 0;
+  width: 100%;
+  justify-content: space-between;
+  margin-top: 2rem;
+
+  .copyright {
+    flex-direction: column;
+    gap: .5rem;
+    font-size: 1.25rem;
+    display: flex;
+  }
+
+  .version {
+    margin-bottom: 1rem;
+    font-family: Consolas, 'Courier New', Courier, monospace;
+  }
 }
 
-.copyright {
-  flex-direction: column;
-  gap: .5rem;
-  font-size: 1.25rem;
-  font-family: monospace;
-  display: flex;
-}
+
