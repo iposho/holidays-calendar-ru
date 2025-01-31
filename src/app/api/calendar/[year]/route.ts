@@ -7,6 +7,9 @@ import { CACHE_CONFIG } from '@/config/cache';
 
 const data = generateData();
 
+export const dynamic = 'force-static';
+export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
+
 export async function generateStaticParams() {
   const years = availableYears();
   return years.map((year) => ({ year: year.toString() }));

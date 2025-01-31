@@ -6,6 +6,9 @@ import { CACHE_CONFIG } from '@/config/cache';
 
 import { generateStaticParams as generateParams } from '@/utils/generateStaticParams';
 
+export const dynamic = 'force-static';
+export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
+
 export async function generateStaticParams() {
   return generateParams([2023, 2024], true, true);
 }
