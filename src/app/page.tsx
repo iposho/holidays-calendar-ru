@@ -20,6 +20,19 @@ export default async function HomePage() {
   return (
     <div className={css.main}>
 
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            url: 'https://calendar.kuzyak.in',
+            name: 'Производственный календарь РФ API',
+            description: 'Производственные календари РФ (2023—2025) в формате JSON. Простой API для получения данных.',
+          }),
+        }}
+      />
+
       <div className={css.content}>
         <div className={css.description}>
           <ReactMarkdown
