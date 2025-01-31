@@ -4,6 +4,9 @@ import { isNotCorrectMonth, isNotCorrectYear } from '@/helpers/isNotCorrect';
 import { NextRequest, NextResponse } from 'next/server';
 import { CACHE_CONFIG } from '@/config/cache';
 
+export const dynamic = 'force-static';
+export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
+
 const data = generateData();
 
 export async function GET(req: NextRequest, { params }: { params: { year: string; month: string } }) {
