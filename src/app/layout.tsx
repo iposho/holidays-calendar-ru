@@ -16,10 +16,16 @@ export const metadata: Metadata = {
   title: 'Производственный календарь РФ API',
   description: 'Производственные календари РФ (2023—2025) в формате JSON. Простой API для получения данных.',
   metadataBase: new URL('https://calendar.kuzyak.in'),
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     siteName: 'Производственный календарь РФ API',
     url: new URL('https://calendar.kuzyak.in'),
     type: 'website',
+    images: [new URL('/opengraph-image.png', 'https://calendar.kuzyak.in')],
+    title: 'Производственный календарь РФ API',
+    description: 'Производственные календари РФ (2023—2025) в формате JSON. Простой API для получения данных.',
   },
 };
 
