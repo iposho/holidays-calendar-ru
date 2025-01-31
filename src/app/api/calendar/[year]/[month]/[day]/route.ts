@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isNotCorrectDay, isNotCorrectMonth, isNotCorrectYear } from '@/helpers/isNotCorrect';
 import { getErrorMessages } from '@/helpers/getErrorMessages';
 import { isWorkingDay } from '@/helpers/isWorkingDay';
+import { CACHE_CONFIG } from '@/config/cache';
 
 import { generateStaticParams as generateParams } from '@/utils/generateStaticParams';
 
@@ -32,7 +33,7 @@ export async function GET(req: NextRequest, { params }: { params: { year: string
     return NextResponse.json(error, { status: error.status });
   }
 
-  return NextResponse.json({
+  return new NextResponse(JSON.stringify({
     year: Number(year),
     month: {
       name: dayData.month.name,
@@ -43,5 +44,11 @@ export async function GET(req: NextRequest, { params }: { params: { year: string
     isShortDay: dayData.isShortDay,
     holiday: dayData.holiday,
     status: 200,
+  }), {
+    status: 200,
+    headers: {
+      'Cache-Control': `public, s-maxage=${CACHE_CONFIG.DEFAULT_REVALIDATE}, stale-while-revalidate=${CACHE_CONFIG.STALE_WHILE_REVALIDATE}`,
+      'Content-Type': 'application/json',
+    },
   });
 }
