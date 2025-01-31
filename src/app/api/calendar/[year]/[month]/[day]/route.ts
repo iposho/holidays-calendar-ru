@@ -10,7 +10,7 @@ export const dynamic = 'force-static';
 export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
 
 export async function generateStaticParams() {
-  return generateParams([2023, 2024], true, true);
+  return generateParams([2023, 2024, 2025], true, true);
 }
 
 export async function GET(req: NextRequest, { params }: { params: { year: string, month: string, day: string } }) {

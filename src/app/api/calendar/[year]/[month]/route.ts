@@ -3,9 +3,14 @@ import { getErrorMessages } from '@/helpers/getErrorMessages';
 import { isNotCorrectMonth, isNotCorrectYear } from '@/helpers/isNotCorrect';
 import { NextRequest, NextResponse } from 'next/server';
 import { CACHE_CONFIG } from '@/config/cache';
+import { generateStaticParams as generateParams } from '@/utils/generateStaticParams';
 
 export const dynamic = 'force-static';
 export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
+
+export async function generateStaticParams() {
+  return generateParams([2023, 2024, 2025], true);
+}
 
 const data = generateData();
 
