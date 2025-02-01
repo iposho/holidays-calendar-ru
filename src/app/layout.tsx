@@ -27,6 +27,9 @@ export const metadata: Metadata = {
     title: 'Производственный календарь РФ API',
     description: 'Производственные календари РФ (2023—2025) в формате JSON. Простой API для получения данных.',
   },
+  verification: {
+    yandex: 'a52f1210dfd6f94c',
+  },
 };
 
 const ibmPlexSans = IBM_Plex_Sans({
