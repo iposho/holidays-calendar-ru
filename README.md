@@ -92,6 +92,11 @@ GET /api/calendar/{year}/{month}
 GET /api/calendar/{year}/{month}/{day}
 ```
 
+### 📅 Календарь праздников и сокращенных дней в формате ICS
+```http
+GET /api/calendar/{year}/ics
+```
+
 ---
 
 ## 🔧 Swagger-документация
@@ -132,6 +137,11 @@ print_r($data);
 ### 💻 Curl
 ```bash
 curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar/2024"
+```
+
+### 📅 Календарь праздников и сокращенных дней в формате ICS
+```bash
+curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar/2024/ics"
 ```
 
 ---
