@@ -18,6 +18,13 @@ const nextConfig = {
       },
     ],
   },
+  poweredByHeader: false,
+  reactStrictMode: true,
+  swcMinify: true,
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['swagger-ui-react'],
+  },
 };
 
 module.exports = nextConfig;

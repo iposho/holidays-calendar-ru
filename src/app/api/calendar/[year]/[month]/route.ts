@@ -9,7 +9,7 @@ export const dynamic = 'force-static';
 export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
 
 export async function generateStaticParams() {
-  return generateParams([2023, 2024, 2025], true);
+  return generateParams([2023, 2024, 2025, 2026, 2027], true);
 }
 
 const data = generateData();

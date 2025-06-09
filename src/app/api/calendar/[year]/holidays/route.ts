@@ -7,7 +7,7 @@ import { CACHE_CONFIG } from '@/config/cache';
 import { generateStaticParams as generateParams } from '@/utils/generateStaticParams';
 
 export async function generateStaticParams() {
-  return generateParams([2023, 2024, 2025]);
+  return generateParams([2023, 2024, 2025, 2026, 2027]);
 }
 
 const data = generateData();

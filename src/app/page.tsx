@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import { fetchLocalReadme } from '@/utils/readmeFetcher';
+import { JsonLd } from '@/components/JsonLd';
 
 import packageJson from '../../package.json';
 
@@ -17,21 +18,17 @@ export default async function HomePage() {
     markdown = 'Не удалось загрузить содержимое README.md.';
   }
 
+  const jsonLdData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    url: 'https://calendar.kuzyak.in',
+    name: 'Производственный календарь РФ API',
+    description: 'Производственные календари РФ (2023—2025) в формате JSON. Простой API для получения данных.',
+  };
+
   return (
     <div className={css.main}>
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'WebSite',
-            url: 'https://calendar.kuzyak.in',
-            name: 'Производственный календарь РФ API',
-            description: 'Производственные календари РФ (2023—2025) в формате JSON. Простой API для получения данных.',
-          }),
-        }}
-      />
+      <JsonLd data={jsonLdData} />
 
       <div className={css.content}>
         <div className={css.description}>
