@@ -30,6 +30,20 @@ export const metadata: Metadata = {
   verification: {
     yandex: 'a52f1210dfd6f94c',
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  other: {
+    'Cache-Control': 'public, max-age=31536000, immutable',
+  },
 };
 
 const ibmPlexSans = IBM_Plex_Sans({

@@ -6,6 +6,12 @@ const buildDate = new Date().toISOString();
 
 const nextConfig = {
   compress: true,
+  poweredByHeader: false,
+  swcMinify: true,
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['swagger-ui-react'],
+  },
   env: {
     YANDEX_METRIKA_ID: process.env.YANDEX_METRIKA_ID,
     BUILD_DATE: buildDate,

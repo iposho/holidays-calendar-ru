@@ -6,7 +6,8 @@
   "extends":[
     "next/core-web-vitals",
     "airbnb",
-    "airbnb-typescript"
+    "airbnb-typescript",
+    "airbnb/hooks"
   ],
   "parserOptions": {
     "project": "./tsconfig.json"
@@ -61,6 +62,10 @@
         "devDependencies": true
       }
     ],
-    "@next/next/no-img-element": "off"
+    "@next/next/no-img-element": "off",
+    "react/no-unstable-nested-components": "off",
+    "react/no-danger": [1, {
+      "allow": ["dangerouslySetInnerHTML"]
+    }]
   }
 }
