@@ -3,12 +3,12 @@ import { generateData } from '@/helpers/generateData';
 import { isNotCorrectYear } from '@/helpers/isNotCorrect';
 import { getErrorMessages } from '@/helpers/getErrorMessages';
 import { availableYears } from '@/helpers/availableYears';
-import { CACHE_CONFIG, CACHE_CONTROL } from '@/config/cache';
+import { CACHE_CONTROL } from '@/config/cache';
 
 const data = generateData();
 
 export const dynamic = 'force-static';
-export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
+export const revalidate = 15552000; // 180 дней
 
 export async function generateStaticParams() {
   const years = availableYears();

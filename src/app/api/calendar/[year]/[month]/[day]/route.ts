@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isNotCorrectDay, isNotCorrectMonth, isNotCorrectYear } from '@/helpers/isNotCorrect';
 import { getErrorMessages } from '@/helpers/getErrorMessages';
 import { isWorkingDay } from '@/helpers/isWorkingDay';
-import { CACHE_CONFIG, CACHE_CONTROL } from '@/config/cache';
+import { CACHE_CONTROL } from '@/config/cache';
 import { generateStaticParams as generateParams } from '@/utils/generateStaticParams';
 
 export const dynamic = 'force-static';
-export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
+export const revalidate = 15552000; // 180 дней
 
 export async function generateStaticParams() {
   return generateParams([2023, 2024, 2025], true, true);

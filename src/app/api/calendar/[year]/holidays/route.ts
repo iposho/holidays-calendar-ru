@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateData } from '@/helpers/generateData';
 import { isNotCorrectYear } from '@/helpers/isNotCorrect';
 import { getErrorMessages } from '@/helpers/getErrorMessages';
-import { CACHE_CONFIG, CACHE_CONTROL } from '@/config/cache';
+import { CACHE_CONTROL } from '@/config/cache';
 
 import { generateStaticParams as generateParams } from '@/utils/generateStaticParams';
 
@@ -13,7 +13,7 @@ export async function generateStaticParams() {
 const data = generateData();
 
 export const dynamic = 'force-static';
-export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
+export const revalidate = 15552000; // 180 дней
 
 export async function GET(req: NextRequest, { params }: { params: { year: string } }) {
   const { year } = params;
