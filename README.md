@@ -36,6 +36,8 @@
 curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar/2023"
 ```
 
+> Ответы кэшируются в браузере и на CDN в течение 180 дней, что снижает количество запросов к серверу.
+
 ### Локальный запуск
 
 ```bash

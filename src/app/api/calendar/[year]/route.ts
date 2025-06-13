@@ -3,7 +3,7 @@ import { generateData } from '@/helpers/generateData';
 import { isNotCorrectYear } from '@/helpers/isNotCorrect';
 import { getErrorMessages } from '@/helpers/getErrorMessages';
 import { availableYears } from '@/helpers/availableYears';
-import { CACHE_CONFIG } from '@/config/cache';
+import { CACHE_CONFIG, CACHE_CONTROL } from '@/config/cache';
 
 const data = generateData();
 
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest, { params }: { params: { year: string
   }), {
     status: 200,
     headers: {
-      'Cache-Control': `public, s-maxage=${CACHE_CONFIG.DEFAULT_REVALIDATE}, stale-while-revalidate=${CACHE_CONFIG.STALE_WHILE_REVALIDATE}`,
+      'Cache-Control': CACHE_CONTROL,
       'Content-Type': 'application/json',
     },
   });
