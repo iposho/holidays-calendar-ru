@@ -4,14 +4,15 @@ import { getErrorMessages } from '@/helpers/getErrorMessages';
 import { isWorkingDay } from '@/helpers/isWorkingDay';
 import { CACHE_CONFIG } from '@/config/cache';
 
-import { generateStaticParams as generateParams } from '@/utils/generateStaticParams';
+import { CACHE_CONFIG } from '@/config/cache';
 
-export const dynamic = 'force-static';
+// export const dynamic = 'force-static'; // Динамическая генерация по запросу
 export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
 
-export async function generateStaticParams() {
-  return generateParams([2023, 2024, 2025], true, true);
-}
+// Удаляем generateStaticParams для динамической генерации страниц дней
+// export async function generateStaticParams() {
+//   return generateParams([2023, 2024, 2025], true, true);
+// }
 
 export async function GET(req: NextRequest, { params }: { params: { year: string, month: string, day: string } }) {
   const { year, month, day } = params;
