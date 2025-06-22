@@ -3,15 +3,9 @@ import { getErrorMessages } from '@/helpers/getErrorMessages';
 import { isNotCorrectMonth, isNotCorrectYear } from '@/helpers/isNotCorrect';
 import { NextRequest, NextResponse } from 'next/server';
 import { CACHE_CONFIG } from '@/config/cache';
-// import { generateStaticParams as generateParams } from '@/utils/generateStaticParams'; // Удаляем для динамической генерации
 
-export const dynamic = 'force-dynamic'; // Изменяем на force-dynamic для генерации по запросу
+export const dynamic = 'force-dynamic';
 export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
-
-// Удаляем generateStaticParams для динамической генерации страниц месяцев
-// export async function generateStaticParams() {
-//   return generateParams([2023, 2024, 2025], true);
-// }
 
 const data = generateData();
 
