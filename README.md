@@ -42,6 +42,8 @@ curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/c
 curl -H "X-API-Token: <your_token>" "https://calendar.kuzyak.in/api/calendar/2023"
 ```
 
+> **NB:** В ближайших версиях API планируется ограничение количества запросов для публичных ключей.
+
 ### Локальный запуск
 
 ```bash
