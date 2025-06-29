@@ -3,8 +3,16 @@ import { isNotCorrectDay, isNotCorrectMonth, isNotCorrectYear } from '@/helpers/
 import { getErrorMessages } from '@/helpers/getErrorMessages';
 import { isWorkingDay } from '@/helpers/isWorkingDay';
 import { CACHE_CONFIG } from '@/config/cache';
+import { generateStaticParams as generateParams } from '@/utils/generateStaticParams';
 
+// Статическая генерация с кешированием
+export const dynamic = 'force-static';
 export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
+
+export async function generateStaticParams() {
+  // Генерация параметров для каждого дня
+  return generateParams([2023, 2024, 2025], true, true);
+}
 
 export async function GET(req: NextRequest, { params }: { params: { year: string, month: string, day: string } }) {
   const { year, month, day } = params;

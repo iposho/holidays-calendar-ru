@@ -1,0 +1,13 @@
+{
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, s-maxage=15768000, stale-while-revalidate=86400"
+        }
+      ]
+    }
+  ]
+}

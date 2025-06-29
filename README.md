@@ -36,6 +36,12 @@
 curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar/2023"
 ```
 
+При наличии переменной `API_TOKEN` запросы можно защищать токеном:
+
+```bash
+curl -H "X-API-Token: <your_token>" "https://calendar.kuzyak.in/api/calendar/2023"
+```
+
 ### Локальный запуск
 
 ```bash

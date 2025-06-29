@@ -7,10 +7,12 @@ import { CACHE_CONFIG } from '@/config/cache';
 
 const data = generateData();
 
+// Статическая генерация списка месяцев
 export const dynamic = 'force-static';
 export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
 
 export async function generateStaticParams() {
+  // Параметры для предварительной генерации
   const years = availableYears();
   return years.map((year) => ({ year: year.toString() }));
 }

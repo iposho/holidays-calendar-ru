@@ -9,7 +9,15 @@ interface YearData {
 
 const years = availableYears();
 
+// Кэш данных для повторного использования между вызовами
+let cachedData: Record<number, YearData> | null = null;
+
+// Генерация данных для всех доступных годов
 export const generateData = (): Record<number, YearData> => {
+  if (cachedData) {
+    return cachedData;
+  }
+
   const data: Record<number, YearData> = {};
 
   years.forEach((year) => {
@@ -19,5 +27,6 @@ export const generateData = (): Record<number, YearData> => {
     };
   });
 
+  cachedData = data;
   return data;
 };
