@@ -26,9 +26,9 @@ interface YearlyData {
 export const YEAR_SINCE = 2023;
 export const LAST_AVAILABLE_YEAR = 2025;
 
-// --- Cached Data ---
-// By processing the source JSON data once at module initialization,
-// we avoid re-parsing it on every function call, improving performance.
+// --- Кэшированные данные ---
+// Обрабатывая исходные JSON данные один раз при инициализации модуля,
+// мы избегаем повторного парсинга при каждом вызове функции, улучшая производительность.
 
 const processedHolidays: Record<number, Day[]> = {};
 const processedShortDays: Record<number, Day[]> = {};
@@ -36,7 +36,9 @@ const processedWorkingHolidays: Record<number, Day[]> = {};
 
 function processYearData(year: number, sourceData: YearlyData, targetCache: Record<number, Day[]>) {
   const yearData = sourceData[year.toString()] || [];
-  targetCache[year] = yearData.map(({ month, day, name }: DayData) => createDateString(year, month, day, name));
+  const processedData = yearData.map(({ month, day, name }: DayData) => createDateString(year, month, day, name));
+  // Используем Object.assign для избежания прямого присваивания параметру
+  Object.assign(targetCache, { [year]: processedData });
 }
 
 for (let year = YEAR_SINCE; year <= LAST_AVAILABLE_YEAR; year++) {
@@ -45,19 +47,13 @@ for (let year = YEAR_SINCE; year <= LAST_AVAILABLE_YEAR; year++) {
   processYearData(year, workingHolidaysSourceData as YearlyData, processedWorkingHolidays);
 }
 
-// --- End of Cached Data ---
+// --- Конец кэшированных данных ---
 
 // Получение списка праздников для указанного года
-export const getHolidays = (year: number): Day[] => {
-  return processedHolidays[year] || [];
-};
+export const getHolidays = (year: number): Day[] => processedHolidays[year] || [];
 
 // Получение списка сокращенных дней для указанного года
-export const getShortDays = (year: number): Day[] => {
-  return processedShortDays[year] || [];
-};
+export const getShortDays = (year: number): Day[] => processedShortDays[year] || [];
 
 // Получение списка рабочих праздников для указанного года
-export const getWorkingHolidays = (year: number): Day[] => {
-  return processedWorkingHolidays[year] || [];
-};
+export const getWorkingHolidays = (year: number): Day[] => processedWorkingHolidays[year] || [];
