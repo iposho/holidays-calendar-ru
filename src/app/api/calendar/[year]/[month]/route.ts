@@ -3,11 +3,28 @@ import { getErrorMessages } from '@/helpers/getErrorMessages';
 import { isNotCorrectMonth, isNotCorrectYear } from '@/helpers/isNotCorrect';
 import { NextRequest, NextResponse } from 'next/server';
 import { CACHE_CONFIG } from '@/config/cache';
+import { availableYears } from '@/helpers/availableYears';
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-static'; // Changed from 'force-dynamic'
 export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
 
-const data = generateData();
+const data = generateData(); // Data generation benefits from cached holiday loader
+
+export async function generateStaticParams() {
+  const years = availableYears();
+  const params: { year: string; month: string }[] = [];
+
+  years.forEach((year) => {
+    for (let month = 1; month <= 12; month++) {
+      params.push({
+        year: year.toString(),
+        month: month.toString(),
+      });
+    }
+  });
+
+  return params;
+}
 
 export async function GET(req: NextRequest, { params }: { params: { year: string; month: string } }) {
   const { year, month } = params;
@@ -24,6 +41,8 @@ export async function GET(req: NextRequest, { params }: { params: { year: string
   const monthData = data[Number(year)]?.months[Number(month) - 1];
 
   if (!monthData) {
+    // This case should ideally not be hit for statically generated params
+    // but kept as a safeguard or for future dynamic additions if any.
     const error = getErrorMessages('not_found');
     return NextResponse.json(error, { status: error.status });
   }

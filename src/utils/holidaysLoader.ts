@@ -1,6 +1,6 @@
-import holidaysData from '@/data/holidays.json';
-import shortDaysData from '@/data/shortDays.json';
-import workingHolidaysData from '@/data/workingHolidays.json';
+import holidaysSourceData from '@/data/holidays.json';
+import shortDaysSourceData from '@/data/shortDays.json';
+import workingHolidaysSourceData from '@/data/workingHolidays.json';
 
 import { createDateString } from '@/helpers/createDateString';
 
@@ -26,20 +26,38 @@ interface YearlyData {
 export const YEAR_SINCE = 2023;
 export const LAST_AVAILABLE_YEAR = 2025;
 
+// --- Cached Data ---
+// By processing the source JSON data once at module initialization,
+// we avoid re-parsing it on every function call, improving performance.
+
+const processedHolidays: Record<number, Day[]> = {};
+const processedShortDays: Record<number, Day[]> = {};
+const processedWorkingHolidays: Record<number, Day[]> = {};
+
+function processYearData(year: number, sourceData: YearlyData, targetCache: Record<number, Day[]>) {
+  const yearData = sourceData[year.toString()] || [];
+  targetCache[year] = yearData.map(({ month, day, name }: DayData) => createDateString(year, month, day, name));
+}
+
+for (let year = YEAR_SINCE; year <= LAST_AVAILABLE_YEAR; year++) {
+  processYearData(year, holidaysSourceData as YearlyData, processedHolidays);
+  processYearData(year, shortDaysSourceData as YearlyData, processedShortDays);
+  processYearData(year, workingHolidaysSourceData as YearlyData, processedWorkingHolidays);
+}
+
+// --- End of Cached Data ---
+
 // Получение списка праздников для указанного года
 export const getHolidays = (year: number): Day[] => {
-  const holidays = (holidaysData as YearlyData)[year.toString()] || [];
-  return holidays.map(({ month, day, name }: DayData) => createDateString(year, month, day, name));
+  return processedHolidays[year] || [];
 };
 
 // Получение списка сокращенных дней для указанного года
 export const getShortDays = (year: number): Day[] => {
-  const days = (shortDaysData as YearlyData)[year.toString()] || [];
-  return days.map(({ month, day, name }: DayData) => createDateString(year, month, day, name));
+  return processedShortDays[year] || [];
 };
 
 // Получение списка рабочих праздников для указанного года
 export const getWorkingHolidays = (year: number): Day[] => {
-  const days = (workingHolidaysData as YearlyData)[year.toString()] || [];
-  return days.map(({ month, day, name }: DayData) => createDateString(year, month, day, name));
+  return processedWorkingHolidays[year] || [];
 };
