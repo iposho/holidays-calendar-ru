@@ -10,6 +10,26 @@ const nextConfig = {
     YANDEX_METRIKA_ID: process.env.YANDEX_METRIKA_ID,
     BUILD_DATE: buildDate,
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/calendar/:year(\\d{4})/:month(\\d{1,2})/:day(\\d{1,2})',
+        destination: '/static-api/calendar/:year/:month/:day.json',
+      },
+      {
+        source: '/api/calendar/:year(\\d{4})/:month(\\d{1,2})',
+        destination: '/static-api/calendar/:year/:month.json',
+      },
+      {
+        source: '/api/calendar/:year(\\d{4})/holidays',
+        destination: '/static-api/calendar/:year/holidays.json',
+      },
+      {
+        source: '/api/calendar/:year(\\d{4})',
+        destination: '/static-api/calendar/:year.json',
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

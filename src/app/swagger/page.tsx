@@ -1,9 +1,13 @@
 // 'use client';
 
-import dynamic from 'next/dynamic';
+import dynamicImport from 'next/dynamic';
 import 'swagger-ui-react/swagger-ui.css';
+import { CACHE_CONFIG } from '@/config/cache';
 
-const SwaggerUI = dynamic(() => import('swagger-ui-react'), { ssr: false });
+const SwaggerUI = dynamicImport(() => import('swagger-ui-react'), { ssr: false });
+
+export const dynamic = 'force-static';
+export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
 
 export default function SwaggerPage() {
   const swaggerUrl = '/swagger.json'; // Path to static file

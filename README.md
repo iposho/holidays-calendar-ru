@@ -42,8 +42,11 @@ curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/c
 git clone https://github.com/iposho/holidays-calendar-ru.git
 cd holidays-calendar-ru
 npm install
+npm run generate:api
 npm run dev
 ```
+Запуск `generate:api` создаст статические файлы в `public/static-api`,
+которые будут использоваться для ответов API.
 
 ### Docker
 
@@ -63,6 +66,9 @@ docker run -p 5000:5000 holidays-calendar
 - **Docker**: Быстрое развертывание в контейнере.
 - **Локальное развертывание**: Минимальные требования для запуска API.
 - **Статическая генерация маршрутов API**: Повышает производительность сервера и снижает нагрузку при билде.
+- **Предварительная генерация JSON**: Все ответы API создаются командой `npm run generate:api` в каталоге `public/static-api` и могут обслуживаться без запуска серверных функций.
+  Команда автоматически вызывается в `npm run build`.
+- **Backward compatibility**: Static endpoint `/api/calendar` remains available.
 
 ---
 

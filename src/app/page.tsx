@@ -3,10 +3,14 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import { fetchLocalReadme } from '@/utils/readmeFetcher';
+import { CACHE_CONFIG } from '@/config/cache';
 
 import packageJson from '../../package.json';
 
 import css from './page.module.scss';
+
+export const dynamic = 'force-static';
+export const revalidate = CACHE_CONFIG.DEFAULT_REVALIDATE;
 
 export default async function HomePage() {
   let markdown = '';

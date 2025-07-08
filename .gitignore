@@ -41,4 +41,5 @@ next-env.d.ts
 # my stuff
 combineFiles.mjs
 filelist.txt
+public/static-api/
 project_code.txt

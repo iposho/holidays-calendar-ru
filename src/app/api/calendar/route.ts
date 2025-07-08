@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server';
-import { generateData } from '@/helpers/generateData';
+import { availableYears } from '@/helpers/availableYears';
 
-const data = generateData();
+export const dynamic = 'force-static';
+export const revalidate = false;
 
 export async function GET() {
-  // Преобразование ключей объекта в массив чисел
-  const years = Object.keys(data).map(Number);
-
+  const years = availableYears();
   return NextResponse.json({ years, status: 200 });
 }
