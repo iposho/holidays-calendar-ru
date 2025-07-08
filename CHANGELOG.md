@@ -25,3 +25,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - ESLint issues in `holidaysLoader.ts`
 
+## [1.13.2] - 2025-07-07
+
+### Changed
+- Enabled static rendering for homepage and Swagger page
+- Cached README loading to reduce runtime file access
+
+## [1.14.0] - 2025-07-08
+
+### Added
+- Pre-generated JSON files for calendar API to avoid edge invocations
+### Changed
+- Updated build process to generate static API data
+
+## [1.14.1] - 2025-07-08
+
+### Changed
+- Removed dynamic Next.js API routes in favor of fully static JSON responses
+- Documented usage of `npm run generate:api`
+
+
+## [1.14.2] - 2025-07-08
+
+### Fixed
+- Restored `/api/calendar` endpoint for backward compatibility using static data
