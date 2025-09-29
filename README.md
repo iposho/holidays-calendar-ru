@@ -58,8 +58,23 @@ npm run generate-api  # Перегенерировать статические 
 
 ### Использование API
 
+API поддерживает различные форматы путей для максимальной совместимости:
+
 ```bash
-curl -H "Content-Type:application/json" -X GET "https://calendar.kuzyak.in/api/calendar/2023"
+# Год
+curl "https://calendar.kuzyak.in/api/calendar/2023"
+
+# Месяц (поддерживаются оба формата)
+curl "https://calendar.kuzyak.in/api/calendar/2023/01"    # zero-padded
+curl "https://calendar.kuzyak.in/api/calendar/2023/1"     # non-padded
+
+# День (поддерживаются все комбинации)
+curl "https://calendar.kuzyak.in/api/calendar/2023/01/05" # zero-padded
+curl "https://calendar.kuzyak.in/api/calendar/2023/1/5"   # non-padded
+curl "https://calendar.kuzyak.in/api/calendar/2023/01/5"   # mixed
+
+# Праздники года
+curl "https://calendar.kuzyak.in/api/calendar/2023/holidays"
 ```
 
 ### Локальный запуск
