@@ -8,6 +8,8 @@ import packageJson from '../../package.json';
 
 import css from './page.module.scss';
 
+export const dynamic = 'force-static';
+
 export default async function HomePage() {
   let markdown = '';
 
