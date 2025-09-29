@@ -28,7 +28,7 @@ const nextConfig = {
       {
         source: '/api/:path*',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=86400, s-maxage=31536000' },
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
           { key: 'Content-Type', value: 'application/json' },
           { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
         ],
@@ -36,7 +36,7 @@ const nextConfig = {
       {
         source: '/static-api/:path*',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=86400, s-maxage=31536000' },
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
           { key: 'Content-Type', value: 'application/json' },
           { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
         ],
