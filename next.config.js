@@ -16,6 +16,8 @@ const nextConfig = {
     return [
       // Root calendar endpoint
       { source: '/api/calendar', destination: '/static-api/calendar/index.json' },
+      // ICS export for a specific year
+      { source: '/api/calendar/:year(\\d{4}).ics', destination: '/static-api/calendar/:year.ics' },
       // Day-level must come before month-level
       { source: '/api/calendar/:year(\\d{4})/:month(\\d{1,2})/:day(\\d{1,2})', destination: '/static-api/calendar/:year/:month/:day.json' },
       { source: '/api/calendar/:year(\\d{4})/:month(\\d{1,2})', destination: '/static-api/calendar/:year/:month.json' },
@@ -26,7 +28,23 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/api/:path*',
+        source: '/api/calendar/:year(\\d{4}).ics',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
+          { key: 'Content-Type', value: 'text/calendar; charset=utf-8' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
+        ],
+      },
+      {
+        source: '/static-api/calendar/:year(\\d{4}).ics',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
+          { key: 'Content-Type', value: 'text/calendar; charset=utf-8' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
+        ],
+      },
+      {
+        source: '/api/:path((?!.*\\.ics$).*)',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
           { key: 'Content-Type', value: 'application/json' },
@@ -34,7 +52,7 @@ const nextConfig = {
         ],
       },
       {
-        source: '/static-api/:path*',
+        source: '/static-api/:path((?!.*\\.ics$).*)',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
           { key: 'Content-Type', value: 'application/json' },
