@@ -3,6 +3,7 @@
 // https://nextjs.org/docs/app/api-reference/next-config-js/
 
 const buildDate = new Date().toISOString();
+const packageJson = require('./package.json');
 
 const nextConfig = {
   compress: true,
@@ -25,15 +26,17 @@ const nextConfig = {
       {
         source: '/api/:path*',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          { key: 'Cache-Control', value: 'public, max-age=86400, s-maxage=31536000' },
           { key: 'Content-Type', value: 'application/json' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
         ],
       },
       {
         source: '/static-api/:path*',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          { key: 'Cache-Control', value: 'public, max-age=86400, s-maxage=31536000' },
           { key: 'Content-Type', value: 'application/json' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
         ],
       },
     ];
