@@ -5,7 +5,9 @@
   "author": "Pavel Kuzyakin <pavel@kuzyak.in> (https://kuzyak.in)",
   "homepage": "https://github.com/iposho/holidays-calendar-ru#readme",
   "scripts": {
+    "predev": "node scripts/generate-static-api.js",
     "dev": "next dev -p 5000",
+    "generate-api": "node scripts/generate-static-api.js",
     "prebuild": "node scripts/generate-static-api.js",
     "build": "next build",
     "start": "next start",
