@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.0] - 2025-01-15
+
+### Added
+- Статические endpoints для максимальной производительности API
+- Автоматическая генерация статических JSON файлов при сборке проекта
+- Скрипт `scripts/generate-static-api.js` для создания статических файлов
+- Оптимизированная стратегия кеширования с ETag валидацией
+- Раздельное кеширование для браузеров (24ч) и CDN (1 год)
+- Поддержка условных запросов для проверки обновлений
+
+### Changed
+- API endpoints теперь обслуживаются статическими файлами вместо серверных вычислений
+- Настроены rewrites в next.config.js для перенаправления на статические файлы
+- Обновлена документация с описанием статических endpoints и стратегии кеширования
+- Улучшена производительность загрузки API данных
+
+### Fixed
+- Удалены сгенерированные файлы из Git репозитория для оптимизации размера
+- Добавлена папка `/public/static-api/` в .gitignore
+- Ускорены Git операции (клонирование, мерж, diff)
+
 ## [1.14.0] - 2025-01-04
 
 ### Added
