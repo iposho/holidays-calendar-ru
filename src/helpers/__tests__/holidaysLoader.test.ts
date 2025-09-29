@@ -36,7 +36,29 @@ describe('holidaysLoader', () => {
   it('должен вернуть пустой массив рабочих выходных для 2026 года', () => {
     const workingHolidays = getWorkingHolidays(2026);
     expect(Array.isArray(workingHolidays)).toBe(true);
-    // В 2026 году нет рабочих праздников
+    // В 2026 году нет рабочих праздников (переносы добавляют выходные дни)
     expect(workingHolidays.length).toBe(0);
+  });
+
+  it('должен содержать перенесенные праздники для 2026 года', () => {
+    const holidays = getHolidays(2026);
+    
+    // Проверяем наличие перенесенного праздника 9 марта (компенсация за 8 марта в воскресенье)
+    const march9Holiday = holidays.find(h => h.date === '2026-03-09');
+    expect(march9Holiday).toBeDefined();
+    expect(march9Holiday?.name).toBe('Международный женский день');
+    
+    // Проверяем наличие перенесенного праздника 11 мая (компенсация за 9 мая в субботу)
+    const may11Holiday = holidays.find(h => h.date === '2026-05-11');
+    expect(may11Holiday).toBeDefined();
+    expect(may11Holiday?.name).toBe('День Победы');
+    
+    // Проверяем, что 8 марта НЕ является праздником (перенесен на 9 марта)
+    const march8Holiday = holidays.find(h => h.date === '2026-03-08');
+    expect(march8Holiday).toBeUndefined();
+    
+    // Проверяем, что 9 мая НЕ является праздником (перенесен на 11 мая)
+    const may9Holiday = holidays.find(h => h.date === '2026-05-09');
+    expect(may9Holiday).toBeUndefined();
   });
 });
