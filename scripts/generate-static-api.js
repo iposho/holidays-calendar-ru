@@ -152,6 +152,12 @@ const makeDayInfo = (year, month /* 1-12 */, day) => {
 const outRoot = path.join(process.cwd(), 'public', 'static-api', 'calendar');
 ensureDir(outRoot);
 
+// /api/calendar (root endpoint)
+writeJSON(path.join(outRoot, 'index.json'), {
+  years,
+  status: 200,
+});
+
 for (const y of years) {
   // /api/calendar/{year}
   writeJSON(path.join(outRoot, `${y}.json`), {
