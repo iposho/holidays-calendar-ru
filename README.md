@@ -77,6 +77,33 @@ curl "https://calendar.kuzyak.in/api/calendar/2023/01/5"   # mixed
 curl "https://calendar.kuzyak.in/api/calendar/2023/holidays"
 ```
 
+### Обработка ошибок
+
+API возвращает структурированные JSON ошибки для невалидных запросов:
+
+```bash
+# Невалидный год
+curl "https://calendar.kuzyak.in/api/calendar/1999"
+# {"error":"Invalid year","status":422}
+
+# Невалидный месяц
+curl "https://calendar.kuzyak.in/api/calendar/2023/13"
+# {"error":"Invalid month","status":422}
+
+# Невалидный день
+curl "https://calendar.kuzyak.in/api/calendar/2023/01/40"
+# {"error":"Invalid day","status":422}
+
+# Несуществующий день (29 февраля в невисокосном году)
+curl "https://calendar.kuzyak.in/api/calendar/2023/02/29"
+# {"error":"Invalid day","status":422}
+```
+
+**Коды ошибок:**
+- `422` - Невалидные параметры (год, месяц, день)
+- `404` - Ресурс не найден
+- `400` - Неизвестная ошибка
+
 ### Локальный запуск
 
 ```bash
