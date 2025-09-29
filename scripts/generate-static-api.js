@@ -208,9 +208,9 @@ for (const y of years) {
         month: info.month,
         date: info.date.toISOString(),
         isWorkingDay: info.isWorkingDay,
+        isShortDay: info.isShortDay || false,
         status: 200,
       };
-      if (info.isShortDay) payload.isShortDay = true;
       if (info.holiday) payload.holiday = info.holiday;
       
       // Zero-padded version (01.json, 02.json, etc.)
