@@ -24,7 +24,7 @@ interface YearlyData {
 
 // Глобальные настройки
 export const YEAR_SINCE = 2023;
-export const LAST_AVAILABLE_YEAR = 2025;
+export const LAST_AVAILABLE_YEAR = 2026;
 
 // --- Кэшированные данные ---
 // Обрабатывая исходные JSON данные один раз при инициализации модуля,
