@@ -28,7 +28,16 @@ export function middleware(request: NextRequest) {
     }
 
     if (pathParts.length >= 4) {
-      const month = parseInt(pathParts[3], 10);
+      const fourthSegment = pathParts[3];
+
+      // Проверяем, является ли четвертый сегмент "holidays"
+      if (fourthSegment === 'holidays') {
+        // Путь /api/calendar/{year}/holidays - валиден, продолжаем
+        return NextResponse.next();
+      }
+
+      // Иначе пытаемся парсить как месяц
+      const month = parseInt(fourthSegment, 10);
 
       // Валидация месяца
       if (Number.isNaN(month) || isNotCorrectMonth(month)) {
