@@ -21,6 +21,135 @@ const writeJSON = (filePath, obj) => {
   fs.writeFileSync(filePath, JSON.stringify(obj), 'utf8');
 };
 
+const writeText = (filePath, text) => {
+  ensureDir(path.dirname(filePath));
+  fs.writeFileSync(filePath, text, 'utf8');
+};
+
+const ICS_LINE_LIMIT = 75; // octets per line before folding
+
+const formatDateForICS = (date) => date.toISOString().split('T')[0].replace(/-/g, '');
+
+const formatDateTimeForICS = (date) => date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+
+const addDaysUTC = (date, amount) => {
+  const next = new Date(date.valueOf());
+  next.setUTCDate(next.getUTCDate() + amount);
+  return next;
+};
+
+const escapeIcsText = (value) => value
+  .replace(/\\/g, '\\\\')
+  .replace(/\r?\n/g, '\\n')
+  .replace(/,/g, '\\,')
+  .replace(/;/g, '\\;');
+
+const foldIcsLine = (line) => {
+  const bytes = Buffer.from(line, 'utf8');
+  if (bytes.length <= ICS_LINE_LIMIT) return line;
+
+  const segments = [];
+  let start = 0;
+  while (start < bytes.length) {
+    let end = Math.min(start + ICS_LINE_LIMIT, bytes.length);
+    while (end < bytes.length && (bytes[end] & 0b11000000) === 0b10000000) {
+      end -= 1;
+    }
+    if (end <= start) {
+      end = Math.min(start + ICS_LINE_LIMIT, bytes.length);
+    }
+    segments.push(bytes.slice(start, end).toString('utf8'));
+    start = end;
+  }
+  return segments[0] + segments.slice(1).map((segment) => `\r\n ${segment}`).join('');
+};
+
+const buildIcsEventLines = (info, dtstamp) => {
+  const weekend = isWeekend(info.date);
+  const categories = new Set();
+  let summary;
+
+  if (!info.isWorkingDay) {
+    categories.add('NON_WORKING');
+    if (info.holiday) {
+      summary = `Праздник: ${info.holiday}`;
+      categories.add('HOLIDAY');
+    } else if (weekend) {
+      summary = 'Выходной день';
+      categories.add('WEEKEND');
+    } else {
+      summary = 'Нерабочий день';
+    }
+  } else if (info.isShortDay) {
+    summary = info.holiday ? `Сокращенный день: ${info.holiday}` : 'Сокращенный рабочий день';
+    categories.add('WORKDAY');
+    categories.add('SHORT_DAY');
+    if (weekend) categories.add('WEEKEND_WORK');
+  } else if (weekend) {
+    summary = 'Рабочий день (перенос)';
+    categories.add('WORKDAY');
+    categories.add('WEEKEND_WORK');
+  } else {
+    summary = 'Рабочий день';
+    categories.add('WORKDAY');
+  }
+
+  const descriptionParts = [
+    `Год: ${info.year}`,
+    `Месяц: ${info.month.name}`,
+    `Рабочий день: ${info.isWorkingDay ? 'Да' : 'Нет'}`,
+    `Сокращенный день: ${info.isShortDay ? 'Да' : 'Нет'}`,
+    `Выходной по календарю: ${weekend ? 'Да' : 'Нет'}`,
+  ];
+
+  if (info.holiday) descriptionParts.push(`Повод: ${info.holiday}`);
+
+  const day = String(info.date.getUTCDate()).padStart(2, '0');
+  const month = String(info.month.id + 1).padStart(2, '0');
+  descriptionParts.push(`API endpoint: /api/calendar/${info.year}/${month}/${day}`);
+
+  const dtstart = formatDateForICS(info.date);
+  const dtend = formatDateForICS(addDaysUTC(info.date, 1));
+  const uid = `${dtstart}-${info.year}@holidays-calendar-ru`;
+  const description = descriptionParts.join('\n');
+  const categoriesLine = Array.from(categories).join(',') || 'INFO';
+
+  return [
+    'BEGIN:VEVENT',
+    `UID:${uid}`,
+    `DTSTAMP:${dtstamp}`,
+    `DTSTART;VALUE=DATE:${dtstart}`,
+    `DTEND;VALUE=DATE:${dtend}`,
+    `SUMMARY:${escapeIcsText(summary)}`,
+    `DESCRIPTION:${escapeIcsText(description)}`,
+    `CATEGORIES:${categoriesLine}`,
+    'TRANSP:TRANSPARENT',
+    'END:VEVENT',
+  ].map(foldIcsLine);
+};
+
+const buildIcsCalendar = (year, events) => {
+  const now = formatDateTimeForICS(new Date());
+  const headerLines = [
+    'BEGIN:VCALENDAR',
+    'PRODID:-//holidays-calendar-ru//RU',
+    'VERSION:2.0',
+    'CALSCALE:GREGORIAN',
+    `X-WR-CALNAME:Производственный календарь РФ ${year}`,
+    `X-WR-CALDESC:Производственный календарь РФ ${year}`,
+    'X-WR-TIMEZONE:UTC',
+  ].map(foldIcsLine);
+
+  const footerLines = ['END:VCALENDAR'];
+
+  const calendarLines = headerLines.concat(
+    events.flatMap((eventInfo) => buildIcsEventLines(eventInfo, now)),
+    footerLines,
+  );
+
+  return `${calendarLines.join('\r\n')}\r\n`;
+};
+
 const getDaysCount = (year, month /* 1-12 */) => new Date(year, month, 0).getDate();
 
 const createDateString = (year, month /* 0-11 */, date, name) => ({
@@ -159,6 +288,7 @@ writeJSON(path.join(outRoot, 'index.json'), {
 });
 
 for (const y of years) {
+  const icsEvents = [];
   // /api/calendar/{year}
   writeJSON(path.join(outRoot, `${y}.json`), {
     year: y,
@@ -203,6 +333,7 @@ for (const y of years) {
     const daysInMonth = getDaysCount(y, m);
     for (let d = 1; d <= daysInMonth; d++) {
       const info = makeDayInfo(y, m, d);
+      icsEvents.push(info);
       const payload = {
         year: info.year,
         month: info.month,
@@ -230,7 +361,10 @@ for (const y of years) {
       }
     }
   }
+
+  const icsPath = path.join(outRoot, `${y}.ics`);
+  writeText(icsPath, buildIcsCalendar(y, icsEvents));
 }
 
-console.log(`[static-api] Generated static API for years: ${years.join(', ')}`);
+console.log(`[static-api] Generated static API and ICS files for years: ${years.join(', ')}`);
 
