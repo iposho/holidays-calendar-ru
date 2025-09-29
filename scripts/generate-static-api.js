@@ -177,14 +177,29 @@ for (const y of years) {
   });
 
   for (let m = 1; m <= 12; m++) {
-    // /api/calendar/{year}/{month}
-    writeJSON(path.join(outRoot, String(y), `${m}.json`), {
+    // /api/calendar/{year}/{month} - create both padded and non-padded versions
+    const monthData = {
       year: y,
       month: generateMonth(y, m),
       status: 200,
-    });
+    };
+    
+    // Zero-padded version (01.json, 02.json, etc.)
+    writeJSON(path.join(outRoot, String(y), `${m.toString().padStart(2, '0')}.json`), monthData);
+    
+    // Non-padded version (1.json, 2.json, etc.) - only for single digits
+    if (m < 10) {
+      writeJSON(path.join(outRoot, String(y), `${m}.json`), monthData);
+    }
 
-    // /api/calendar/{year}/{month}/{day}
+    // /api/calendar/{year}/{month}/{day} - create both padded and non-padded versions
+    const monthDirPadded = path.join(outRoot, String(y), m.toString().padStart(2, '0'));
+    const monthDirNonPadded = path.join(outRoot, String(y), String(m));
+    ensureDir(monthDirPadded);
+    if (m < 10) {
+      ensureDir(monthDirNonPadded);
+    }
+    
     const daysInMonth = getDaysCount(y, m);
     for (let d = 1; d <= daysInMonth; d++) {
       const info = makeDayInfo(y, m, d);
@@ -197,7 +212,17 @@ for (const y of years) {
       };
       if (info.isShortDay) payload.isShortDay = true;
       if (info.holiday) payload.holiday = info.holiday;
-      writeJSON(path.join(outRoot, String(y), String(m), `${d}.json`), payload);
+      
+      // Zero-padded version (01.json, 02.json, etc.)
+      writeJSON(path.join(monthDirPadded, `${d.toString().padStart(2, '0')}.json`), payload);
+      
+      // Non-padded version (1.json, 2.json, etc.) - only for single digits
+      if (d < 10) {
+        writeJSON(path.join(monthDirPadded, `${d}.json`), payload);
+        if (m < 10) {
+          writeJSON(path.join(monthDirNonPadded, `${d}.json`), payload);
+        }
+      }
     }
   }
 }
