@@ -223,6 +223,11 @@ for (const y of years) {
           writeJSON(path.join(monthDirNonPadded, `${d}.json`), payload);
         }
       }
+      
+      // Zero-padded version in non-padded month directory (for mixed paths like /2023/1/05)
+      if (m < 10) {
+        writeJSON(path.join(monthDirNonPadded, `${d.toString().padStart(2, '0')}.json`), payload);
+      }
     }
   }
 }
