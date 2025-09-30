@@ -30,9 +30,9 @@ export function middleware(request: NextRequest) {
     if (pathParts.length >= 4) {
       const fourthSegment = pathParts[3];
 
-      // Проверяем, является ли четвертый сегмент "holidays"
-      if (fourthSegment === 'holidays') {
-        // Путь /api/calendar/{year}/holidays - валиден, продолжаем
+      // Проверяем, является ли четвертый сегмент "holidays" или "ics"
+      if (fourthSegment === 'holidays' || fourthSegment === 'ics') {
+        // Путь /api/calendar/{year}/holidays или /api/calendar/{year}/ics - валиден, продолжаем
         return NextResponse.next();
       }
 
