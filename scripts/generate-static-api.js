@@ -164,7 +164,7 @@ const generateIcs = (year, holidays) => {
 
     const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
     const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
-    const now = new Date().toISOString().replace(/[:.-]/g, '').replace('Z', '').substring(0, 15);
+    const now = new Date().toISOString().replace(/[:.-]/g, '').substring(0, 15);
 
     return [
       'BEGIN:VEVENT',
@@ -185,7 +185,7 @@ const generateIcs = (year, holidays) => {
 
     const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
     const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
-    const now = new Date().toISOString().replace(/[:.-]/g, '').replace('Z', '').substring(0, 15);
+    const now = new Date().toISOString().replace(/[:.-]/g, '').substring(0, 15);
 
     allEvents.push([
       'BEGIN:VEVENT',
@@ -207,7 +207,7 @@ const generateIcs = (year, holidays) => {
 
     const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
     const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
-    const now = new Date().toISOString().replace(/[:.-]/g, '').replace('Z', '').substring(0, 15);
+    const now = new Date().toISOString().replace(/[:.-]/g, '').substring(0, 15);
 
     allEvents.push([
       'BEGIN:VEVENT',
