@@ -67,7 +67,7 @@ const nextConfig = {
         ],
       },
       {
-        source: '/api/calendar/:year(\\d{4})',
+        source: '/api/calendar/:year(\\d{4})(?!/ics)',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
           { key: 'Content-Type', value: 'application/json' },
@@ -107,7 +107,7 @@ const nextConfig = {
         ],
       },
       {
-        source: '/static-api/calendar/:year(\\d{4})',
+        source: '/static-api/calendar/:year(\\d{4})(?!\\.ics)',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
           { key: 'Content-Type', value: 'application/json' },
