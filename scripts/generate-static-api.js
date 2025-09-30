@@ -154,14 +154,17 @@ const makeDayInfo = (year, month /* 1-12 */, day) => {
 };
 
 const generateIcs = (year, holidays) => {
-  const events = holidays.map((holiday) => {
+  const shortDays = getShortDays(year);
+  const workingHolidays = getWorkingHolidays(year);
+  
+  const allEvents = holidays.map((holiday) => {
     const startDate = new Date(holiday.date);
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + 1);
 
     const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
     const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
-    const now = new Date().toISOString().replace(/[:.-]/g, '');
+    const now = new Date().toISOString().replace(/[:.-]/g, '').replace('Z', '').substring(0, 15);
 
     return [
       'BEGIN:VEVENT',
@@ -174,6 +177,51 @@ const generateIcs = (year, holidays) => {
     ].join('\n');
   });
 
+  // Добавляем короткие дни
+  shortDays.forEach((shortDay) => {
+    const startDate = new Date(shortDay.date);
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 1);
+
+    const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
+    const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
+    const now = new Date().toISOString().replace(/[:.-]/g, '').replace('Z', '').substring(0, 15);
+
+    allEvents.push([
+      'BEGIN:VEVENT',
+      `DTSTART;VALUE=DATE:${start}`,
+      `DTEND;VALUE=DATE:${end}`,
+      `DTSTAMP:${now}Z`,
+      `UID:${now}-${start}-${Math.random().toString(36).substr(2, 9)}@kuzyak.in`,
+      `SUMMARY:${shortDay.name} (сокращенный день)`,
+      'CATEGORIES:SHORT_DAY',
+      'END:VEVENT',
+    ].join('\n'));
+  });
+
+  // Добавляем рабочие выходные
+  workingHolidays.forEach((workingHoliday) => {
+    const startDate = new Date(workingHoliday.date);
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 1);
+
+    const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
+    const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
+    const now = new Date().toISOString().replace(/[:.-]/g, '').replace('Z', '').substring(0, 15);
+
+    allEvents.push([
+      'BEGIN:VEVENT',
+      `DTSTART;VALUE=DATE:${start}`,
+      `DTEND;VALUE=DATE:${end}`,
+      `DTSTAMP:${now}Z`,
+      `UID:${now}-${start}-${Math.random().toString(36).substr(2, 9)}@kuzyak.in`,
+      `SUMMARY:${workingHoliday.name} (рабочий выходной)`,
+      'CATEGORIES:WORKING_HOLIDAY',
+      'END:VEVENT',
+    ].join('\n'));
+  });
+
+  const events = allEvents;
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',

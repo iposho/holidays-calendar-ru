@@ -27,13 +27,23 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/api/calendar/:year(\\d{4})/ics',
+        source: '/static-api/calendar/:year(\\d{4})\\.ics',
         headers: [
           { key: 'Content-Type', value: 'text/calendar; charset=utf-8' },
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
         ],
       },
       {
-        source: '/api/:path*',
+        source: '/api/calendar/:year(\\d{4})/ics',
+        headers: [
+          { key: 'Content-Type', value: 'text/calendar; charset=utf-8' },
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
+        ],
+      },
+      {
+        source: '/api/calendar/:year(\\d{4})/:month(\\d{1,2})/:day(\\d{1,2})',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
           { key: 'Content-Type', value: 'application/json' },
@@ -41,7 +51,71 @@ const nextConfig = {
         ],
       },
       {
-        source: '/static-api/:path*',
+        source: '/api/calendar/:year(\\d{4})/:month(\\d{1,2})',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
+        ],
+      },
+      {
+        source: '/api/calendar/:year(\\d{4})/holidays',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
+        ],
+      },
+      {
+        source: '/api/calendar/:year(\\d{4})',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
+        ],
+      },
+      {
+        source: '/api/calendar',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
+        ],
+      },
+      {
+        source: '/static-api/calendar/:year(\\d{4})/:month(\\d{1,2})/:day(\\d{1,2})',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
+        ],
+      },
+      {
+        source: '/static-api/calendar/:year(\\d{4})/:month(\\d{1,2})',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
+        ],
+      },
+      {
+        source: '/static-api/calendar/:year(\\d{4})/holidays',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
+        ],
+      },
+      {
+        source: '/static-api/calendar/:year(\\d{4})',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
+        ],
+      },
+      {
+        source: '/static-api/calendar/index',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
           { key: 'Content-Type', value: 'application/json' },
