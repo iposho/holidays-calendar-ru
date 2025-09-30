@@ -16,11 +16,13 @@ const nextConfig = {
     return [
       // Root calendar endpoint
       { source: '/api/calendar', destination: '/static-api/calendar/index.json' },
-      // Day-level must come before month-level
+      // ICS endpoint must come before month-level routes to avoid conflicts
       { source: '/api/calendar/:year(\\d{4})/ics', destination: '/static-api/calendar/:year.ics' },
+      // Holidays endpoint must come before month-level routes
+      { source: '/api/calendar/:year(\\d{4})/holidays', destination: '/static-api/calendar/:year/holidays.json' },
+      // Day-level must come before month-level
       { source: '/api/calendar/:year(\\d{4})/:month(\\d{1,2})/:day(\\d{1,2})', destination: '/static-api/calendar/:year/:month/:day.json' },
       { source: '/api/calendar/:year(\\d{4})/:month(\\d{1,2})', destination: '/static-api/calendar/:year/:month.json' },
-      { source: '/api/calendar/:year(\\d{4})/holidays', destination: '/static-api/calendar/:year/holidays.json' },
       { source: '/api/calendar/:year(\\d{4})', destination: '/static-api/calendar/:year.json' },
     ];
   },
