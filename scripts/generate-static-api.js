@@ -153,76 +153,26 @@ const makeDayInfo = (year, month /* 1-12 */, day) => {
   return result;
 };
 
-const generateIcs = (year, holidays, shortDays, workingHolidays) => {
-  const allEvents = [];
-  
-  // Добавляем праздники
-  holidays.forEach((holiday) => {
+const generateIcs = (year, holidays) => {
+  const events = holidays.map((holiday) => {
     const startDate = new Date(holiday.date);
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + 1);
 
     const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
     const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
-    const now = new Date().toISOString().replace(/[:.-]/g, '').replace('Z', '');
+    const now = new Date().toISOString().replace(/[:.-]/g, '');
 
-    allEvents.push([
+    return [
       'BEGIN:VEVENT',
       `DTSTART;VALUE=DATE:${start}`,
       `DTEND;VALUE=DATE:${end}`,
       `DTSTAMP:${now}Z`,
       `UID:${now}-${start}-${Math.random().toString(36).substr(2, 9)}@kuzyak.in`,
       `SUMMARY:${holiday.name}`,
-      'CATEGORIES:HOLIDAY',
       'END:VEVENT',
-    ].join('\n'));
+    ].join('\n');
   });
-
-  // Добавляем короткие дни
-  shortDays.forEach((shortDay) => {
-    const startDate = new Date(shortDay.date);
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 1);
-
-    const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
-    const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
-    const now = new Date().toISOString().replace(/[:.-]/g, '').replace('Z', '');
-
-    allEvents.push([
-      'BEGIN:VEVENT',
-      `DTSTART;VALUE=DATE:${start}`,
-      `DTEND;VALUE=DATE:${end}`,
-      `DTSTAMP:${now}Z`,
-      `UID:${now}-${start}-${Math.random().toString(36).substr(2, 9)}@kuzyak.in`,
-      `SUMMARY:${shortDay.name} (сокращенный день)`,
-      'CATEGORIES:SHORT_DAY',
-      'END:VEVENT',
-    ].join('\n'));
-  });
-
-  // Добавляем рабочие выходные
-  workingHolidays.forEach((workingHoliday) => {
-    const startDate = new Date(workingHoliday.date);
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 1);
-
-    const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
-    const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
-    const now = new Date().toISOString().replace(/[:.-]/g, '').replace('Z', '');
-
-    allEvents.push([
-      'BEGIN:VEVENT',
-      `DTSTART;VALUE=DATE:${start}`,
-      `DTEND;VALUE=DATE:${end}`,
-      `DTSTAMP:${now}Z`,
-      `UID:${now}-${start}-${Math.random().toString(36).substr(2, 9)}@kuzyak.in`,
-      `SUMMARY:${workingHoliday.name} (рабочий выходной)`,
-      'CATEGORIES:WORKING_HOLIDAY',
-      'END:VEVENT',
-    ].join('\n'));
-  });
-
-  const events = allEvents;
 
   return [
     'BEGIN:VCALENDAR',
@@ -254,7 +204,7 @@ for (const y of years) {
   });
 
   // /api/calendar/{year}/ics
-  const icsData = generateIcs(y, getHolidays(y), getShortDays(y), getWorkingHolidays(y));
+  const icsData = generateIcs(y, getHolidays(y));
   writeText(path.join(outRoot, `${y}.ics`), icsData);
 
   // /api/calendar/{year}/holidays
