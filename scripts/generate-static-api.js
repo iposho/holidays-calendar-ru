@@ -21,6 +21,11 @@ const writeJSON = (filePath, obj) => {
   fs.writeFileSync(filePath, JSON.stringify(obj), 'utf8');
 };
 
+const writeText = (filePath, text) => {
+  ensureDir(path.dirname(filePath));
+  fs.writeFileSync(filePath, text, 'utf8');
+};
+
 const getDaysCount = (year, month /* 1-12 */) => new Date(year, month, 0).getDate();
 
 const createDateString = (year, month /* 0-11 */, date, name) => ({
@@ -148,6 +153,38 @@ const makeDayInfo = (year, month /* 1-12 */, day) => {
   return result;
 };
 
+const generateIcs = (year, holidays) => {
+  const events = holidays.map((holiday) => {
+    const startDate = new Date(holiday.date);
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 1);
+
+    const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
+    const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
+    const now = new Date().toISOString().replace(/[:.-]/g, '');
+
+    return [
+      'BEGIN:VEVENT',
+      `DTSTART;VALUE=DATE:${start}`,
+      `DTEND;VALUE=DATE:${end}`,
+      `DTSTAMP:${now}Z`,
+      `UID:${now}-${start}-${Math.random().toString(36).substr(2, 9)}@kuzyak.in`,
+      `SUMMARY:${holiday.name}`,
+      'END:VEVENT',
+    ].join('\n');
+  });
+
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//kuzyak.in//NONSGML Production Calendar//EN',
+    `X-WR-CALNAME:Производственный календарь ${year}`,
+    'X-WR-TIMEZONE:Europe/Moscow',
+    ...events,
+    'END:VCALENDAR',
+  ].join('\n');
+};
+
 // ---- Generate files ----
 const outRoot = path.join(process.cwd(), 'public', 'static-api', 'calendar');
 ensureDir(outRoot);
@@ -165,6 +202,10 @@ for (const y of years) {
     months: generateMonths(y),
     status: 200,
   });
+
+  // /api/calendar/{year}/ics
+  const icsData = generateIcs(y, getHolidays(y));
+  writeText(path.join(outRoot, `${y}.ics`), icsData);
 
   // /api/calendar/{year}/holidays
   const holidays = getHolidays(y).map((h) => ({ date: new Date(h.date).toISOString(), name: h.name }));
