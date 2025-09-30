@@ -153,6 +153,14 @@ const makeDayInfo = (year, month /* 1-12 */, day) => {
   return result;
 };
 
+const generateStableUid = (date, type, name) => {
+  // Создаем стабильный UID на основе даты, типа и названия события
+  const dateStr = date.replace(/-/g, '');
+  const typePrefix = type === 'holiday' ? 'H' : type === 'short' ? 'S' : 'W';
+  const nameHash = Buffer.from(name, 'utf8').toString('base64').replace(/[^A-Za-z0-9]/g, '').substring(0, 8);
+  return `${dateStr}-${typePrefix}-${nameHash}@kuzyak.in`;
+};
+
 const generateIcs = (year, holidays) => {
   const shortDays = getShortDays(year);
   const workingHolidays = getWorkingHolidays(year);
@@ -166,12 +174,14 @@ const generateIcs = (year, holidays) => {
     const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
     const now = new Date().toISOString().replace(/[:.-]/g, '').substring(0, 15);
 
+    const uid = generateStableUid(holiday.date, 'holiday', holiday.name);
+    
     return [
       'BEGIN:VEVENT',
       `DTSTART;VALUE=DATE:${start}`,
       `DTEND;VALUE=DATE:${end}`,
       `DTSTAMP:${now}Z`,
-      `UID:${now}-${start}-${Math.random().toString(36).substr(2, 9)}@kuzyak.in`,
+      `UID:${uid}`,
       `SUMMARY:${holiday.name}`,
       'END:VEVENT',
     ].join('\n');
@@ -186,13 +196,14 @@ const generateIcs = (year, holidays) => {
     const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
     const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
     const now = new Date().toISOString().replace(/[:.-]/g, '').substring(0, 15);
+    const uid = generateStableUid(shortDay.date, 'short', shortDay.name);
 
     allEvents.push([
       'BEGIN:VEVENT',
       `DTSTART;VALUE=DATE:${start}`,
       `DTEND;VALUE=DATE:${end}`,
       `DTSTAMP:${now}Z`,
-      `UID:${now}-${start}-${Math.random().toString(36).substr(2, 9)}@kuzyak.in`,
+      `UID:${uid}`,
       `SUMMARY:${shortDay.name} (сокращенный день)`,
       'CATEGORIES:SHORT_DAY',
       'END:VEVENT',
@@ -208,13 +219,14 @@ const generateIcs = (year, holidays) => {
     const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
     const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
     const now = new Date().toISOString().replace(/[:.-]/g, '').substring(0, 15);
+    const uid = generateStableUid(workingHoliday.date, 'working', workingHoliday.name);
 
     allEvents.push([
       'BEGIN:VEVENT',
       `DTSTART;VALUE=DATE:${start}`,
       `DTEND;VALUE=DATE:${end}`,
       `DTSTAMP:${now}Z`,
-      `UID:${now}-${start}-${Math.random().toString(36).substr(2, 9)}@kuzyak.in`,
+      `UID:${uid}`,
       `SUMMARY:${workingHoliday.name} (рабочий выходной)`,
       'CATEGORIES:WORKING_HOLIDAY',
       'END:VEVENT',
