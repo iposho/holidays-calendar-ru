@@ -161,7 +161,7 @@ const generateIcs = (year, holidays) => {
 
     const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
     const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
-    const now = new Date().toISOString().replace(/[:.-]/g, '');
+    const now = new Date().toISOString().replace(/[:.-]/g, '').replace('Z', '');
 
     return [
       'BEGIN:VEVENT',
