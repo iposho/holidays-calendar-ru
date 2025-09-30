@@ -17,6 +17,7 @@ const nextConfig = {
       // Root calendar endpoint
       { source: '/api/calendar', destination: '/static-api/calendar/index.json' },
       // Day-level must come before month-level
+      { source: '/api/calendar/:year(\\d{4})/ics', destination: '/static-api/calendar/:year.ics' },
       { source: '/api/calendar/:year(\\d{4})/:month(\\d{1,2})/:day(\\d{1,2})', destination: '/static-api/calendar/:year/:month/:day.json' },
       { source: '/api/calendar/:year(\\d{4})/:month(\\d{1,2})', destination: '/static-api/calendar/:year/:month.json' },
       { source: '/api/calendar/:year(\\d{4})/holidays', destination: '/static-api/calendar/:year/holidays.json' },
@@ -25,6 +26,12 @@ const nextConfig = {
   },
   async headers() {
     return [
+      {
+        source: '/api/calendar/:year(\\d{4})/ics',
+        headers: [
+          { key: 'Content-Type', value: 'text/calendar; charset=utf-8' },
+        ],
+      },
       {
         source: '/api/:path*',
         headers: [
