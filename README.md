@@ -7,7 +7,7 @@
 ![MIT LICENSE](https://img.shields.io/github/license/iposho/holidays-calendar-ru)
 [![Build and Push Docker Image](https://github.com/iteterin/holidays-calendar-ru/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/iteterin/holidays-calendar-ru/actions/workflows/docker-publish.yml)
 
-📅 API для получения производственных календарей РФ (2023–2025) в формате JSON.
+📅 API для получения производственных календарей РФ (2023–2026) в формате JSON.
 
 🔗 Быстрое, простое и удобное REST API для разработчиков.
 
