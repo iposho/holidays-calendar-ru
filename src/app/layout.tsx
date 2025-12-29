@@ -1,12 +1,11 @@
 import { ReactNode } from 'react';
 import { Metadata } from 'next';
 
-import { IBM_Plex_Sans } from 'next/font/google';
-
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { Metrika } from '@/components/metrika';
 
-import '@/styles/global.scss';
+import '@/styles/tailwind.css';
 
 interface LayoutProps {
   children: ReactNode;
@@ -32,18 +31,22 @@ export const metadata: Metadata = {
   },
 };
 
-const ibmPlexSans = IBM_Plex_Sans({
+const inter = Inter({
   subsets: ['latin', 'cyrillic'],
-  weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic'],
+  variable: '--font-sans',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
 });
 
 const isProduction = process.env.NODE_ENV === 'production';
 
 function Layout({ children }: LayoutProps) {
   return (
-    <html lang="en" className={ibmPlexSans.className}>
-      <body>{children}</body>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <body className="font-sans antialiased">{children}</body>
       {
         isProduction
         && (

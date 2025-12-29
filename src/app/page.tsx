@@ -1,78 +1,24 @@
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeHighlight from 'rehype-highlight';
-import { fetchLocalReadme } from '@/utils/readmeFetcher';
-
+import { HeroSection } from '@/components/hero-section';
+import { FeaturesSection } from '@/components/features-section';
+import { ApiEndpoints } from '@/components/api-endpoints';
+import { CodePreview } from '@/components/code-preview';
+import { Footer } from '@/components/footer';
 import packageJson from '../../package.json';
-
-import css from './page.module.scss';
 
 export const dynamic = 'force-static';
 
-export default async function HomePage() {
-  let markdown = '';
-
-  try {
-    markdown = await fetchLocalReadme();
-  } catch (error) {
-    markdown = 'Не удалось загрузить содержимое README.md.';
-  }
-
+export default function HomePage() {
   return (
-    <div className={css.main}>
+    <div className="min-h-screen">
+      <main>
+        <HeroSection />
+        <FeaturesSection />
+        <CodePreview />
+        <ApiEndpoints />
+      </main>
 
-      <script
-        type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'WebSite',
-            url: 'https://calendar.kuzyak.in',
-            name: 'Производственный календарь РФ API',
-            description: 'Производственные календари РФ (2023—2025) в формате JSON. Простой API для получения данных.',
-          }),
-        }}
-      />
-
-      <div className={css.content}>
-        <div className={css.description}>
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeHighlight]}
-            components={{
-              // eslint-disable-next-line react/no-unstable-nested-components
-              img: ({ node, ...props }) => (
-                <img {...props} alt={props.alt || ''} />
-              ),
-            }}
-          >
-            {markdown}
-          </ReactMarkdown>
-        </div>
-      </div>
-
-      <footer className={css.footer}>
-        <div className={css.copyright}>
-          <span>
-            © 2023...
-            {new Date().getFullYear()}
-          </span>
-          <span>
-            <a href="https://kuzyak.in">
-              Павел Кузякин
-            </a>
-          </span>
-        </div>
-        <div className={css.version}>
-          <span>
-            <a href="https://github.com/iposho/holidays-calendar-ru">
-              {packageJson?.version}
-            </a>
-          </span>
-        </div>
-      </footer>
+      <Footer version={packageJson?.version} />
     </div>
   );
 }
