@@ -2,12 +2,39 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isNotCorrectYear, isNotCorrectMonth, isNotCorrectDay } from '@/helpers/isNotCorrect';
 import { getErrorMessages } from '@/helpers/getErrorMessages';
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+const SECURITY_HEADERS: Record<string, string> = {
+  'X-DNS-Prefetch-Control': 'on',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'no-referrer-when-downgrade',
+  'Content-Security-Policy': [
+    'default-src \'self\'',
+    `script-src 'self' 'unsafe-inline' ${isDevelopment ? '\'unsafe-eval\'' : ''} https://mc.yandex.ru`,
+    'style-src \'self\' \'unsafe-inline\'',
+    'img-src \'self\' data: https://vercelbadge.vercel.app https://mc.yandex.ru',
+    'connect-src \'self\' https://mc.yandex.ru',
+    'frame-ancestors \'none\'',
+    'base-uri \'self\'',
+    'form-action \'self\'',
+  ].join('; '),
+  'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
+  'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
+};
+
+function withSecurityHeaders(res: NextResponse) {
+  Object.entries(SECURITY_HEADERS).forEach(([k, v]) => res.headers.set(k, v));
+  return res;
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Проверяем только API запросы к календарю
+  // Для всех маршрутов добавляем security headers
+  // Дополнительно валидируем только API-запросы к календарю
   if (!pathname.startsWith('/api/calendar')) {
-    return NextResponse.next();
+    return withSecurityHeaders(NextResponse.next());
   }
 
   // Парсим путь для валидации
@@ -24,7 +51,7 @@ export function middleware(request: NextRequest) {
     // Валидация года
     if (Number.isNaN(year) || isNotCorrectYear(year)) {
       const error = getErrorMessages('year');
-      return NextResponse.json(error, { status: error.status });
+      return withSecurityHeaders(NextResponse.json(error, { status: error.status }));
     }
 
     if (pathParts.length >= 4) {
@@ -42,7 +69,7 @@ export function middleware(request: NextRequest) {
       // Валидация месяца
       if (Number.isNaN(month) || isNotCorrectMonth(month)) {
         const error = getErrorMessages('month');
-        return NextResponse.json(error, { status: error.status });
+        return withSecurityHeaders(NextResponse.json(error, { status: error.status }));
       }
 
       if (pathParts.length >= 5) {
@@ -51,16 +78,18 @@ export function middleware(request: NextRequest) {
         // Валидация дня
         if (Number.isNaN(day) || isNotCorrectDay(year, month, day)) {
           const error = getErrorMessages('day');
-          return NextResponse.json(error, { status: error.status });
+          return withSecurityHeaders(NextResponse.json(error, { status: error.status }));
         }
       }
     }
   }
 
   // Если валидация прошла успешно, продолжаем обработку запроса
-  return NextResponse.next();
+  return withSecurityHeaders(NextResponse.next());
 }
 
 export const config = {
-  matcher: '/api/calendar/:path*',
+  // Применяем middleware ко всем маршрутам, чтобы добавить security headers,
+  // но логика валидации выполнится только для /api/calendar/*
+  matcher: '/:path*',
 };

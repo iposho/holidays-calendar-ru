@@ -42,6 +42,8 @@ next-env.d.ts
 combineFiles.mjs
 filelist.txt
 project_code.txt
+components.json
+.history
 
 # generated static API files
 /public/static-api/

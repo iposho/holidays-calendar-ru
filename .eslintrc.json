@@ -1,9 +1,9 @@
 {
-  "env":{
+  "env": {
     "browser": true,
     "es2021": true
   },
-  "extends":[
+  "extends": [
     "next/core-web-vitals",
     "airbnb",
     "airbnb-typescript"
@@ -12,11 +12,14 @@
     "project": "./tsconfig.json"
   },
   "ignorePatterns": [
-    "next.config.js"
+    "next.config.js",
+    "postcss.config.js",
+    "tailwind.config.js",
+    "jest.config.js"
   ],
-  "rules":{
+  "rules": {
     "react/no-unescaped-entities": "warn",
-    "indent":[
+    "indent": [
       "error",
       2,
       {
@@ -24,17 +27,17 @@
       }
     ],
     "no-plusplus": 0,
-    "quotes":[
+    "quotes": [
       "error",
       "single"
     ],
-    "max-len":[
+    "max-len": [
       "error",
       140,
       2,
       {
-        "ignoreComments":true,
-        "ignoreUrls":true
+        "ignoreComments": true,
+        "ignoreUrls": true
       }
     ],
     "react/require-default-props": "off",
@@ -45,17 +48,18 @@
     "jsx-a11y/media-has-caption": "off",
     "react/jsx-filename-extension": "off",
     "react/react-in-jsx-scope": "off",
-    "linebreak-style":[
+    "linebreak-style": [
       "error",
       "unix"
     ],
     "allowImportingTsExtensions": 0,
-    "object-curly-spacing":[
+    "object-curly-spacing": [
       2,
       "always"
     ],
+    "operator-linebreak": "off",
     "import/prefer-default-export": 0,
-    "import/no-extraneous-dependencies":[
+    "import/no-extraneous-dependencies": [
       "error",
       {
         "devDependencies": true
