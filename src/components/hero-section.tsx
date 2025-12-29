@@ -31,7 +31,7 @@ export function HeroSection() {
         </div>
         <h1
           className={
-            'text-5xl md:text-7xl font-bold tracking-tight text-center mb-6 '
+            'text-3xl md:text-7xl font-bold tracking-tight text-center mb-6 '
             + 'text-balance animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100'
           }
         >
