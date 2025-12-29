@@ -37,8 +37,10 @@ export function HeroSection() {
         >
           Производственный календарь
           {' '}
+          РФ
+          {' '}
           <span className="gradient-text">
-            РФ API
+            API
           </span>
         </h1>
         <p
