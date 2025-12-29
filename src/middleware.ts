@@ -60,7 +60,7 @@ export function middleware(request: NextRequest) {
       // Проверяем, является ли четвертый сегмент "holidays" или "ics"
       if (fourthSegment === 'holidays' || fourthSegment === 'ics') {
         // Путь /api/calendar/{year}/holidays или /api/calendar/{year}/ics - валиден, продолжаем
-        return NextResponse.next();
+        return withSecurityHeaders(NextResponse.next());
       }
 
       // Иначе пытаемся парсить как месяц
