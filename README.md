@@ -1,5 +1,6 @@
 # 🇷🇺 Производственный календарь РФ API
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/iposho/holidays-calendar-ru)
 ![Uptimerobot](https://img.shields.io/uptimerobot/ratio/7/m797301234-a06cf748375429b73d2bee31)
 ![Vercel](https://vercelbadge.vercel.app/api/iposho/holidays-calendar-ru?style=flat)
 ![GitHub Size](https://img.shields.io/github/languages/code-size/iposho/holidays-calendar-ru)
