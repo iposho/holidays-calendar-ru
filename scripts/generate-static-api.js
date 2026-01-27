@@ -28,9 +28,10 @@ const writeText = (filePath, text) => {
 
 const getDaysCount = (year, month /* 1-12 */) => new Date(year, month, 0).getDate();
 
-const createDateString = (year, month /* 0-11 */, date, name) => ({
+const createDateString = (year, month /* 0-11 */, date, name, isHoliday) => ({
   date: new Date(Date.UTC(year, month, date)).toISOString().split('T')[0],
   name,
+  isHoliday,
 });
 
 // ---- Build available years from data keys ----
@@ -50,7 +51,7 @@ const processedShortDays = {};
 const processedWorkingHolidays = {};
 
 for (const year of years) {
-  const holidays = (holidaysSource[String(year)] || []).map(({ month, day, name }) => createDateString(year, month, day, name));
+  const holidays = (holidaysSource[String(year)] || []).map(({ month, day, name, isHoliday }) => createDateString(year, month, day, name, isHoliday));
   const shortDays = (shortDaysSource[String(year)] || []).map(({ month, day, name }) => createDateString(year, month, day, name));
   const workingHolidays = (workingHolidaysSource[String(year)] || []).map(({ month, day, name }) => createDateString(year, month, day, name));
   processedHolidays[year] = holidays;
@@ -164,7 +165,7 @@ const generateStableUid = (date, type, name) => {
 const generateIcs = (year, holidays) => {
   const shortDays = getShortDays(year);
   const workingHolidays = getWorkingHolidays(year);
-  
+
   const allEvents = holidays.map((holiday) => {
     const startDate = new Date(holiday.date);
     const endDate = new Date(startDate);
@@ -175,7 +176,7 @@ const generateIcs = (year, holidays) => {
     const now = new Date().toISOString().replace(/[:.-]/g, '').substring(0, 15);
 
     const uid = generateStableUid(holiday.date, 'holiday', holiday.name);
-    
+
     return [
       'BEGIN:VEVENT',
       `DTSTART;VALUE=DATE:${start}`,
@@ -268,7 +269,9 @@ for (const y of years) {
   writeText(path.join(outRoot, `${y}.ics`), icsData);
 
   // /api/calendar/{year}/holidays
-  const holidays = getHolidays(y).map((h) => ({ date: new Date(h.date).toISOString(), name: h.name }));
+  const holidays = getHolidays(y)
+    .filter((h) => h.isHoliday !== false)
+    .map((h) => ({ date: new Date(h.date).toISOString(), name: h.name }));
   const shortDays = getShortDays(y).map((s) => ({ date: new Date(s.date).toISOString(), name: s.name }));
   writeJSON(path.join(outRoot, String(y), 'holidays.json'), {
     year: y,
@@ -284,10 +287,10 @@ for (const y of years) {
       month: generateMonth(y, m),
       status: 200,
     };
-    
+
     // Zero-padded version (01.json, 02.json, etc.)
     writeJSON(path.join(outRoot, String(y), `${m.toString().padStart(2, '0')}.json`), monthData);
-    
+
     // Non-padded version (1.json, 2.json, etc.) - only for single digits
     if (m < 10) {
       writeJSON(path.join(outRoot, String(y), `${m}.json`), monthData);
@@ -300,7 +303,7 @@ for (const y of years) {
     if (m < 10) {
       ensureDir(monthDirNonPadded);
     }
-    
+
     const daysInMonth = getDaysCount(y, m);
     for (let d = 1; d <= daysInMonth; d++) {
       const info = makeDayInfo(y, m, d);
@@ -313,10 +316,10 @@ for (const y of years) {
         status: 200,
       };
       if (info.holiday) payload.holiday = info.holiday;
-      
+
       // Zero-padded version (01.json, 02.json, etc.)
       writeJSON(path.join(monthDirPadded, `${d.toString().padStart(2, '0')}.json`), payload);
-      
+
       // Non-padded version (1.json, 2.json, etc.) - only for single digits
       if (d < 10) {
         writeJSON(path.join(monthDirPadded, `${d}.json`), payload);
@@ -324,7 +327,7 @@ for (const y of years) {
           writeJSON(path.join(monthDirNonPadded, `${d}.json`), payload);
         }
       }
-      
+
       // Zero-padded version in non-padded month directory (for mixed paths like /2023/1/05)
       if (m < 10) {
         writeJSON(path.join(monthDirNonPadded, `${d.toString().padStart(2, '0')}.json`), payload);

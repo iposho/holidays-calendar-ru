@@ -3,6 +3,7 @@ import { getHolidays, getShortDays } from '@/utils/holidaysLoader';
 interface Holiday {
   date: Date;
   name: string;
+  isHoliday?: boolean;
 }
 
 interface HolidaysData {
@@ -14,6 +15,7 @@ export const generateHolidays = (year: number): HolidaysData => {
   const holidaysArray: Holiday[] = getHolidays(year).map((i) => ({
     date: new Date(i.date),
     name: i.name,
+    isHoliday: i.isHoliday,
   }));
 
   const shortDaysArray: Holiday[] = getShortDays(year).map((i) => ({
