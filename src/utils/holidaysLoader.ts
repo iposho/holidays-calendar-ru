@@ -8,6 +8,7 @@ import { createDateString } from '@/helpers/createDateString';
 export interface Day {
   date: string; // дата в строковом формате
   name: string; // название праздника или события
+  isHoliday?: boolean; // является ли день праздничным (для фильтрации в API)
 }
 
 // Интерфейс для структуры данных в JSON файлах
@@ -15,6 +16,7 @@ interface DayData {
   month: number; // номер месяца
   day: number; // день месяца
   name: string; // название
+  isHoliday?: boolean; // является ли праздник официальным
 }
 
 // Интерфейс для годовых данных (ключ - год в виде строки)
@@ -36,7 +38,9 @@ const processedWorkingHolidays: Record<number, Day[]> = {};
 
 function processYearData(year: number, sourceData: YearlyData, targetCache: Record<number, Day[]>) {
   const yearData = sourceData[year.toString()] || [];
-  const processedData = yearData.map(({ month, day, name }: DayData) => createDateString(year, month, day, name));
+  const processedData = yearData.map(({
+    month, day, name, isHoliday,
+  }: DayData) => createDateString(year, month, day, name, isHoliday));
   // Используем Object.assign для избежания прямого присваивания параметру
   Object.assign(targetCache, { [year]: processedData });
 }
