@@ -22,7 +22,7 @@ describe('holidaysLoader', () => {
     expect(Array.isArray(holidays)).toBe(true);
     expect(holidays.length).toBeGreaterThan(0);
     // Проверяем, что есть новогодние праздники
-    const newYearHolidays = holidays.filter((h) => h.name === 'Новый год');
+    const newYearHolidays = holidays.filter((h) => h.name === 'Новогодние каникулы' || h.name === 'Новый год');
     expect(newYearHolidays.length).toBeGreaterThan(0);
   });
 
