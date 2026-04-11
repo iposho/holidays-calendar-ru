@@ -1,6 +1,7 @@
 import holidaysSourceData from '@/data/holidays.json';
 import shortDaysSourceData from '@/data/shortDays.json';
 import workingHolidaysSourceData from '@/data/workingHolidays.json';
+import transferredHolidaysSourceData from '@/data/transferredHolidays.json';
 
 import { createDateString } from '@/helpers/createDateString';
 
@@ -33,6 +34,7 @@ export const LAST_AVAILABLE_YEAR = 2026;
 const processedHolidays: Record<number, Day[]> = {};
 const processedShortDays: Record<number, Day[]> = {};
 const processedWorkingHolidays: Record<number, Day[]> = {};
+const processedTransferredHolidays: Record<number, Day[]> = {};
 
 function processYearData(year: number, sourceData: YearlyData, targetCache: Record<number, Day[]>) {
   const yearData = sourceData[year.toString()] || [];
@@ -45,6 +47,7 @@ for (let year = YEAR_SINCE; year <= LAST_AVAILABLE_YEAR; year++) {
   processYearData(year, holidaysSourceData as YearlyData, processedHolidays);
   processYearData(year, shortDaysSourceData as YearlyData, processedShortDays);
   processYearData(year, workingHolidaysSourceData as YearlyData, processedWorkingHolidays);
+  processYearData(year, transferredHolidaysSourceData as YearlyData, processedTransferredHolidays);
 }
 
 // --- Конец кэшированных данных ---
@@ -57,3 +60,6 @@ export const getShortDays = (year: number): Day[] => processedShortDays[year] ||
 
 // Получение списка рабочих праздников для указанного года
 export const getWorkingHolidays = (year: number): Day[] => processedWorkingHolidays[year] || [];
+
+// Получение списка перенесенных праздников для указанного года
+export const getTransferredHolidays = (year: number): Day[] => processedTransferredHolidays[year] || [];

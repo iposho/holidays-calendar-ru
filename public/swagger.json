@@ -346,6 +346,12 @@
               "$ref": "#/components/schemas/Holiday"
             }
           },
+          "transferredHolidays": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Holiday"
+            }
+          },
           "status": { "type": "integer" }
         }
       },
