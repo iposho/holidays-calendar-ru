@@ -1,4 +1,9 @@
-import { getHolidays, getShortDays, getWorkingHolidays } from '@/utils/holidaysLoader';
+import {
+  getHolidays,
+  getShortDays,
+  getWorkingHolidays,
+  getTransferredHolidays,
+} from '@/utils/holidaysLoader';
 
 interface WorkingDayResult {
   year: number;
@@ -9,6 +14,8 @@ interface WorkingDayResult {
   date: Date;
   isWorkingDay: boolean;
   holiday?: string;
+  transferredHoliday?: string;
+  isTransferredHoliday?: boolean;
   isShortDay?: boolean;
 }
 
@@ -31,8 +38,10 @@ export const isWorkingDay = (year: number, month: number, day: number): WorkingD
   const holidays = getHolidays(year) || [];
   const shortDays = getShortDays(year) || [];
   const workingHolidays = getWorkingHolidays(year) || [];
+  const transferredHolidays = getTransferredHolidays(year) || [];
 
   const isHoliday = holidays.some((e) => new Date(e.date).valueOf() === date.valueOf());
+  const isTransferredHoliday = transferredHolidays.some((e) => new Date(e.date).valueOf() === date.valueOf());
   const isShortDay = shortDays.some((e) => new Date(e.date).valueOf() === date.valueOf());
   const isWorkingHoliday = isWeekendWorking(date, workingHolidays);
 
@@ -43,12 +52,20 @@ export const isWorkingDay = (year: number, month: number, day: number): WorkingD
       id: month - 1,
     },
     date,
-    isWorkingDay: !isHoliday && (!isWeekend(date) || isWorkingHoliday),
+    isWorkingDay: !isHoliday && !isTransferredHoliday && (!isWeekend(date) || isWorkingHoliday),
   };
 
   if (isHoliday) {
     const holiday = holidays.find((el) => new Date(el.date).valueOf() === date.valueOf());
     if (holiday) result.holiday = holiday.name;
+  }
+
+  if (isTransferredHoliday) {
+    const transferredHoliday = transferredHolidays.find((el) => new Date(el.date).valueOf() === date.valueOf());
+    if (transferredHoliday) {
+      result.isTransferredHoliday = true;
+      result.transferredHoliday = transferredHoliday.name;
+    }
   }
 
   if (isShortDay) {
