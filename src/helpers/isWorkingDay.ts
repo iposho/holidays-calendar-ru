@@ -24,12 +24,11 @@ const isWeekend = (date: Date): boolean => {
   return day === 0 || day === 6;
 };
 
-const isWeekendWorking = (date: Date, workingHolidays: { date: string }[]): boolean => {
-  const day = date.getUTCDay();
-  return day === 6 && workingHolidays.some(
+const isWeekendWorking = (date: Date, workingHolidays: { date: string }[]): boolean => (
+  isWeekend(date) && workingHolidays.some(
     (e) => new Date(e.date).valueOf() === date.valueOf(),
-  );
-};
+  )
+);
 
 export const isWorkingDay = (year: number, month: number, day: number): WorkingDayResult => {
   const date = new Date(Date.UTC(year, month - 1, day));

@@ -8,7 +8,7 @@
 ![MIT LICENSE](https://img.shields.io/github/license/iposho/holidays-calendar-ru)
 [![Build and Push Docker Image](https://github.com/iteterin/holidays-calendar-ru/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/iteterin/holidays-calendar-ru/actions/workflows/docker-publish.yml)
 
-📅 API для получения производственных календарей РФ (2023–2026) в формате JSON.
+📅 API для получения производственных календарей РФ (2023–2027) в формате JSON.
 
 ![Календарь](public/opengraph-image.png)
 
@@ -50,9 +50,36 @@ npm run generate-api  # Перегенерировать статические 
 
 ### Структура проекта
 
-- `src/data/` - исходные данные календаря (праздники, сокращенные дни)
+- `src/data/` - данные календаря:
+  - `holidays.json` — нерабочие праздничные дни по ст. 112 ТК РФ (в том числе выпавшие на выходные);
+  - `transferredHolidays.json` — перенесенные выходные (с исходной датой `from`);
+  - `workingHolidays.json` — выходные дни, ставшие рабочими из-за переноса;
+  - `shortDays.json` — предпраздничные (сокращенные на 1 час) дни;
+  - `decrees.json` — постановления Правительства РФ о переносе выходных (реквизиты, ссылка, список переносов);
+  - `consultant/{year}.json` — снимки производственного календаря [КонсультантПлюс](https://www.consultant.ru/law/ref/calendar/proizvodstvennye/).
+- `scripts/update-calendar.js` - обновление данных с consultant.ru
 - `scripts/generate-static-api.js` - генератор статических API файлов
 - `public/static-api/` - сгенерированные статические файлы (игнорируются в Git)
+
+### Обновление календаря (добавление нового года)
+
+Источник данных — производственный календарь КонсультантПлюс, например
+<https://www.consultant.ru/law/ref/calendar/proizvodstvennye/2027/>.
+
+1. Добавьте в `src/data/decrees.json` запись для нового года: реквизиты постановления Правительства РФ
+   «О переносе выходных дней», ссылку на него и список переносов `{ "from": "...", "to": "..." }`.
+2. Скачайте и разберите календарь:
+
+   ```bash
+   npm run update-calendar -- 2027                    # загрузить страницу consultant.ru
+   npm run update-calendar -- 2027 --html page.html   # или использовать сохраненную страницу
+   npm run update-calendar -- --rebuild               # пересобрать src/data/*.json из снимков
+   ```
+
+   Скрипт сохранит снимок в `src/data/consultant/2027.json` и пересоберет `src/data/*.json`.
+   Если данные сайта не сходятся с переносами из постановления, скрипт завершится с ошибкой.
+3. Запустите `npm test` — тесты сверяют каждый день года со снимком consultant.ru,
+   годовые нормы рабочего времени и наличие постановления.
 
 ---
 
@@ -157,6 +184,30 @@ GET /api/calendar/{year}
 
 ```http
 GET /api/calendar/{year}/holidays
+```
+
+Ответ содержит:
+
+- `holidays` — нерабочие праздничные дни по ст. 112 ТК РФ;
+- `shortDays` — предпраздничные (сокращенные) дни;
+- `transferredHolidays` — перенесенные выходные с исходной датой (`from`), например 9 января 2026 года — перенос с 3 января;
+- `workingWeekends` — выходные дни, ставшие рабочими;
+- `decree` — постановление Правительства РФ о переносе выходных дней со ссылкой на текст.
+
+```json
+{
+  "year": 2026,
+  "transferredHolidays": [
+    { "date": "2026-01-09T00:00:00.000Z", "name": "Перенесенный выходной с 3 января", "from": "2026-01-03T00:00:00.000Z" }
+  ],
+  "decree": {
+    "title": "Постановление Правительства РФ от 24.09.2025 № 1466 «О переносе выходных дней в 2026 году»",
+    "number": "1466",
+    "date": "2025-09-24",
+    "url": "http://publication.pravo.gov.ru/document/0001202509240023",
+    "calendarUrl": "https://www.consultant.ru/law/ref/calendar/proizvodstvennye/2026/"
+  }
+}
 ```
 
 ### 📆 Календарь на месяц

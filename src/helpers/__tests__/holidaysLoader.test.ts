@@ -1,4 +1,12 @@
-import { getHolidays, getShortDays, getWorkingHolidays } from '@/utils/holidaysLoader';
+import {
+  getHolidays,
+  getShortDays,
+  getWorkingHolidays,
+  getTransferredHolidays,
+  getDecree,
+  YEAR_SINCE,
+  LAST_AVAILABLE_YEAR,
+} from '@/utils/holidaysLoader';
 
 describe('holidaysLoader', () => {
   it('должен вернуть массив праздников для 2024 года', () => {
@@ -40,25 +48,40 @@ describe('holidaysLoader', () => {
     expect(workingHolidays.length).toBe(0);
   });
 
-  it('должен содержать перенесенные праздники для 2026 года', () => {
+  it('должен содержать все праздники 2026 года по ст. 112 ТК РФ, включая выпавшие на выходные', () => {
     const holidays = getHolidays(2026);
+    expect(holidays).toHaveLength(14);
 
-    // Проверяем наличие перенесенного праздника 9 марта (компенсация за 8 марта в воскресенье)
-    const march9Holiday = holidays.find((h) => h.date === '2026-03-09');
-    expect(march9Holiday).toBeDefined();
-    expect(march9Holiday?.name).toBe('Международный женский день');
+    // 8 марта и 9 мая 2026 года — воскресенье и суббота, но это все равно праздничные дни
+    expect(holidays.find((h) => h.date === '2026-03-08')?.name).toBe('Международный женский день');
+    expect(holidays.find((h) => h.date === '2026-05-09')?.name).toBe('День Победы');
 
-    // Проверяем наличие перенесенного праздника 11 мая (компенсация за 9 мая в субботу)
-    const may11Holiday = holidays.find((h) => h.date === '2026-05-11');
-    expect(may11Holiday).toBeDefined();
-    expect(may11Holiday?.name).toBe('День Победы');
+    // Перенесенные выходные не дублируются в списке праздников
+    expect(holidays.find((h) => h.date === '2026-01-09')).toBeUndefined();
+    expect(holidays.find((h) => h.date === '2026-12-31')).toBeUndefined();
+  });
 
-    // Проверяем, что 8 марта НЕ является праздником (перенесен на 9 марта)
-    const march8Holiday = holidays.find((h) => h.date === '2026-03-08');
-    expect(march8Holiday).toBeUndefined();
+  it('должен содержать перенесенные выходные 2026 года с исходной датой', () => {
+    const transferred = getTransferredHolidays(2026);
+    expect(transferred.map(({ date, from }) => ({ date, from }))).toEqual([
+      { date: '2026-01-09', from: '2026-01-03' }, // постановление № 1466
+      { date: '2026-03-09', from: '2026-03-08' }, // ч. 2 ст. 112 ТК РФ
+      { date: '2026-05-11', from: '2026-05-09' }, // ч. 2 ст. 112 ТК РФ
+      { date: '2026-12-31', from: '2026-01-04' }, // постановление № 1466
+    ]);
+    expect(transferred[0].name).toBe('Перенесенный выходной с 3 января');
+  });
 
-    // Проверяем, что 9 мая НЕ является праздником (перенесен на 11 мая)
-    const may9Holiday = holidays.find((h) => h.date === '2026-05-09');
-    expect(may9Holiday).toBeUndefined();
+  it('должен возвращать постановление Правительства РФ со ссылкой', () => {
+    const decree = getDecree(2026);
+    expect(decree?.number).toBe('1466');
+    expect(decree?.date).toBe('2025-09-24');
+    expect(decree?.url).toMatch(/^https?:\/\//);
+    expect(getDecree(1999)).toBeUndefined();
+  });
+
+  it('должен определять диапазон годов по данным', () => {
+    expect(YEAR_SINCE).toBe(2023);
+    expect(LAST_AVAILABLE_YEAR).toBe(2027);
   });
 });
