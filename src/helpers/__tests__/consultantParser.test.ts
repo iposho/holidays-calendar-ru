@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { parseConsultantHtml, extractDecree } from '../../../scripts/calendar/parseConsultant';
+import { parseConsultantHtml, extractDecree, extractTransfers } from '../../../scripts/calendar/parseConsultant';
 import { buildYearData } from '../../../scripts/calendar/buildYearData';
 
 const MONTHS = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
@@ -61,6 +61,10 @@ const renderConsultantPage = (
     + '<table><tr><th>Норма</th></tr><tr><td>247</td></tr></table></div></body></html>';
 };
 
+const decrees = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', '..', 'data', 'decrees.json'), 'utf8'),
+);
+
 const snapshot2027: Snapshot = JSON.parse(
   fs.readFileSync(path.join(__dirname, '..', '..', 'data', 'consultant', '2027.json'), 'utf8'),
 );
@@ -104,6 +108,23 @@ describe('parseConsultantHtml', () => {
     expect(parseConsultantHtml(html).decree).toEqual({ date: '2026-09-17', number: '1187', isDraft: false });
   });
 
+  it('извлекает переносы выходных, совпадающие с decrees.json', () => {
+    const html = renderConsultantPage(snapshot2027, {
+      decreeText: 'В 2027 году в соответствии с Постановлением Правительства РФ от 17.09.2026 N 1187 '
+        + '"О переносе выходных дней в 2027 году" перенесены следующие выходные дни: с субботы 2 января на пятницу '
+        + '5 ноября; с воскресенья 3 января на пятницу 31 декабря; с субботы 20 февраля на понедельник 22 февраля.',
+    });
+    const parsed = parseConsultantHtml(html);
+    expect(parsed.transfers).toEqual(decrees['2027'].transfers);
+    expect(() => buildYearData(parsed, { transfers: parsed.transfers })).not.toThrow();
+  });
+
+  it('падает, если вместо запрошенного года получена страница другого года', () => {
+    // consultant.ru перенаправляет страницы старых лет на текущий год
+    expect(() => parseConsultantHtml(renderConsultantPage(snapshot2027), { year: 2024 }))
+      .toThrow(/вместо календаря на 2024 год получена страница 2027 года/);
+  });
+
   it('падает с понятной ошибкой, если разметка страницы изменилась', () => {
     expect(() => parseConsultantHtml('<html><title>Календарь 2027</title><body><div id="content"></div></body></html>'))
       .toThrow(/найдено 0 месяцев из 12/);
@@ -118,6 +139,21 @@ describe('extractDecree', () => {
 
   it('возвращает null, если постановление не найдено', () => {
     expect(extractDecree('Производственный календарь')).toBeNull();
+  });
+});
+
+describe('extractTransfers', () => {
+  it('понимает даты с явным годом', () => {
+    const text = 'перенесены следующие выходные дни: с субботы 28 декабря 2024 года на понедельник 30 декабря; '
+      + 'с воскресенья 7 января на вторник 31 декабря.';
+    expect(extractTransfers(text, 2024)).toEqual([
+      { from: '2024-12-28', to: '2024-12-30' },
+      { from: '2024-01-07', to: '2024-12-31' },
+    ]);
+  });
+
+  it('возвращает пустой список, если переносов на странице нет', () => {
+    expect(extractTransfers('Производственный календарь на 2027 год', 2027)).toEqual([]);
   });
 });
 

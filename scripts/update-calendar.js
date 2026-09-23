@@ -11,7 +11,8 @@
   1. Страница https://www.consultant.ru/law/ref/calendar/proizvodstvennye/{year}/ разбирается в «снимок»
      src/data/consultant/{year}.json (нерабочие и сокращенные дни).
   2. Переносы берутся из src/data/decrees.json (реквизиты постановления Правительства РФ и ссылка на него).
-     Для нового года запись нужно добавить вручную — скрипт подскажет номер и дату постановления со страницы.
+     Если записи для года нет, она создается по странице consultant.ru: номер и дата постановления,
+     список переносов, ссылка на текст с publication.pravo.gov.ru (или на consultant.ru, если не найден).
   3. Из снимка и переносов собираются src/data/{holidays,transferredHolidays,workingHolidays,shortDays}.json.
      Если снимок и переносы противоречат друг другу, скрипт завершится с ошибкой.
 */
@@ -34,6 +35,13 @@ const consultantUrl = (year) => `https://www.consultant.ru/law/ref/calendar/proi
 
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
 const writeJson = (file, data) => fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
+
+// decrees.json хранит переносы в компактном виде: { "from": "...", "to": "..." } на одной строке
+const writeDecrees = (data) => fs.writeFileSync(
+  path.join(DATA_DIR, 'decrees.json'),
+  `${JSON.stringify(data, null, 2).replace(/\{\s+"from": ("[^"]+"),\s+"to": ("[^"]+")\s+\}/g, '{ "from": $1, "to": $2 }')}\n`,
+  'utf8',
+);
 
 const sortKeys = (obj) => Object.fromEntries(Object.keys(obj).sort().map((k) => [k, obj[k]]));
 
@@ -68,20 +76,73 @@ const saveSnapshot = (parsed) => {
   console.log(`[update-calendar] Снимок сохранен: ${path.relative(process.cwd(), file)}`);
 };
 
-const checkDecree = (parsed, decrees) => {
-  const decree = decrees[parsed.year];
-  const found = parsed.decree;
+const PRAVO_API = 'http://publication.pravo.gov.ru/api/Documents';
+
+// Ищет постановление на официальном портале правовой информации; при неудаче возвращает null
+const findDecreeUrl = async (year, { number, date }) => {
+  const [yyyy, mm, dd] = date.split('-');
+  const name = encodeURIComponent(`О переносе выходных дней в ${year} году`);
+  try {
+    const res = await fetch(`${PRAVO_API}?PageSize=10&Index=1&Name=${name}`);
+    if (!res.ok) return null;
+    const { items = [] } = await res.json();
+    const doc = items.find((item) => item.complexName.includes('Правительства Российской Федерации')
+      && item.complexName.includes(`от ${dd}.${mm}.${yyyy}`)
+      && item.complexName.includes(`№ ${number}`));
+    return doc ? `http://publication.pravo.gov.ru/document/${doc.eoNumber}` : null;
+  } catch {
+    return null;
+  }
+};
+
+const createDecree = async (parsed) => {
+  const { year, decree: found, transfers } = parsed;
+  if (!found) {
+    throw new Error(`На странице consultant.ru не найдено постановление о переносе выходных на ${year} год. `
+      + 'Добавьте запись в src/data/decrees.json вручную.');
+  }
+  if (found.isDraft) {
+    throw new Error(`На странице consultant.ru указан проект постановления на ${year} год — дождитесь принятия.`);
+  }
+  const [yyyy, mm, dd] = found.date.split('-');
+  const url = await findDecreeUrl(year, found);
+  if (!url) console.warn('[update-calendar] ВНИМАНИЕ: постановление не найдено на publication.pravo.gov.ru, указана ссылка на consultant.ru');
+  return {
+    title: `Постановление Правительства РФ от ${dd}.${mm}.${yyyy} № ${found.number} «О переносе выходных дней в ${year} году»`,
+    number: found.number,
+    date: found.date,
+    url: url || consultantUrl(year),
+    calendarUrl: consultantUrl(year),
+    transfers,
+  };
+};
+
+// Проверяет запись о постановлении; если записи для года нет — создает ее по данным страницы
+const ensureDecree = async (parsed, decrees) => {
+  const { year, decree: found } = parsed;
   if (found) {
     const draft = found.isDraft ? ' (на странице указан ПРОЕКТ постановления)' : '';
     console.log(`[update-calendar] На странице: постановление от ${found.date} № ${found.number}${draft}`);
   }
+
+  const decree = decrees[year];
   if (!decree) {
-    throw new Error(`В src/data/decrees.json нет записи для ${parsed.year} года. `
-      + 'Добавьте реквизиты постановления и список переносов (from -> to) и запустите скрипт снова.');
+    const created = await createDecree(parsed);
+    // Сначала проверяем согласованность с календарем, затем сохраняем
+    buildYearData(parsed, created);
+    const updated = sortKeys({ ...decrees, [year]: created });
+    writeDecrees(updated);
+    console.log(`[update-calendar] В decrees.json добавлено: ${created.title}, переносов: ${created.transfers.length}`);
+    return updated;
   }
+
   if (found && (found.number !== decree.number || found.date !== decree.date)) {
     console.warn(`[update-calendar] ВНИМАНИЕ: в decrees.json указано постановление от ${decree.date} № ${decree.number}`);
   }
+  if (parsed.transfers.length && JSON.stringify(parsed.transfers) !== JSON.stringify(decree.transfers)) {
+    console.warn(`[update-calendar] ВНИМАНИЕ: переносы на странице отличаются от decrees.json: ${JSON.stringify(parsed.transfers)}`);
+  }
+  return decrees;
 };
 
 const rebuildData = (decrees) => {
@@ -106,7 +167,7 @@ const rebuildData = (decrees) => {
 
 const main = async () => {
   const args = process.argv.slice(2);
-  const decrees = readJson(path.join(DATA_DIR, 'decrees.json'));
+  let decrees = readJson(path.join(DATA_DIR, 'decrees.json'));
 
   if (!args.includes('--rebuild')) {
     const year = Number(args.find((a) => /^\d{4}$/.test(a)));
@@ -117,7 +178,7 @@ const main = async () => {
     const htmlIndex = args.indexOf('--html');
     const html = await loadHtml(year, htmlIndex !== -1 ? args[htmlIndex + 1] : undefined);
     const parsed = parseConsultantHtml(html, { year });
-    checkDecree(parsed, decrees);
+    decrees = await ensureDecree(parsed, decrees);
     // Проверяем согласованность до записи снимка
     buildYearData(parsed, decrees[year]);
     saveSnapshot(parsed);
