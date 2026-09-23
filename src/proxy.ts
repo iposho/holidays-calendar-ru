@@ -28,7 +28,7 @@ function withSecurityHeaders(res: NextResponse) {
   return res;
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Для всех маршрутов добавляем security headers
