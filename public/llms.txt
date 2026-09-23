@@ -10,8 +10,8 @@
 
 - [Список годов](https://calendar.kuzyak.in/api/calendar): `GET /api/calendar` → `{ "years": [2023, 2024, 2025, 2026, 2027], "status": 200 }`
 - [Календарь на год](https://calendar.kuzyak.in/api/calendar/2027): `GET /api/calendar/{year}` → `year`, `months[]` (для каждого месяца: `id` 0–11, `name`, `workingDays`, `notWorkingDays`, `shortDays`, `workingHours` при 40-часовой неделе), `decree`
-- [Праздники года](https://calendar.kuzyak.in/api/calendar/2026/holidays): `GET /api/calendar/{year}/holidays` → `holidays[]` (нерабочие праздничные дни по ст. 112 ТК РФ), `shortDays[]` (сокращенные на 1 час дни), `transferredHolidays[]` (перенесенные выходные, поле `from` — исходная дата), `workingWeekends[]` (выходные, ставшие рабочими), `decree`. Элементы списков: `{ "date", "name" }`
-- [Календарь iCalendar](https://calendar.kuzyak.in/api/calendar/2027/ics): `GET /api/calendar/{year}/ics` → файл `text/calendar` с праздниками, сокращенными днями, перенесенными выходными и рабочими субботами; подходит для подписки в Google Calendar, Apple Calendar, Outlook
+- [Подписка на календарь iCalendar](https://calendar.kuzyak.in/api/calendar/ics): `GET /api/calendar/ics` (или `webcal://calendar.kuzyak.in/api/calendar/ics`) → файл `text/calendar` со всеми годами для постоянной подписки в Google Calendar, Apple Calendar, Outlook, Яндекс Календаре (с автообновлением)
+- [Календарь года iCalendar](https://calendar.kuzyak.in/api/calendar/2027/ics): `GET /api/calendar/{year}/ics` → файл `text/calendar` на выбранный год с праздниками, сокращенными днями, перенесенными выходными и рабочими субботами
 - [Месяц](https://calendar.kuzyak.in/api/calendar/2026/05): `GET /api/calendar/{year}/{month}` → `month: { id, name, workingDays, notWorkingDays, shortDays, workingHours }`
 - [День](https://calendar.kuzyak.in/api/calendar/2026/01/09): `GET /api/calendar/{year}/{month}/{day}` → `date`, `isWorkingDay`, `isShortDay`, а также `holiday` (название праздника) или `transferredHoliday` (название перенесенного выходного), если применимо
 

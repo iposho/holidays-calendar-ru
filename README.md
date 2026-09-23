@@ -221,15 +221,16 @@ GET /api/calendar/{year}/holidays
 }
 ```
 
-### 🗓️ Календарь в формате iCalendar
+### 🗓️ Подписка на календарь и формат iCalendar
 
 ```http
+GET /api/calendar/ics
 GET /api/calendar/{year}/ics
 ```
 
-Файл `.ics` с праздниками, сокращенными днями, перенесенными выходными и рабочими субботами.
-Подходит для импорта или подписки в Google Calendar, Apple Calendar и Outlook:
-`https://calendar.kuzyak.in/api/calendar/2027/ics`.
+- **Постоянная подписка (все годы)**: `https://calendar.kuzyak.in/api/calendar/ics` (или `webcal://calendar.kuzyak.in/api/calendar/ics`). Файл `.ics` со всеми доступными годами (2023–2027+), поддержкой автообновления раз в неделю и автоматическим получением новых переносов.
+- **Календарь на выбранный год**: `https://calendar.kuzyak.in/api/calendar/2027/ics`.
+- Подходит для подписки в Google Calendar, Apple Calendar, Outlook и Яндекс Календаре.
 
 ### 📆 Календарь на месяц
 

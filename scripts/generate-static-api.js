@@ -198,7 +198,7 @@ const generateStableUid = (date, type, name) => {
   return `${dateStr}-${typePrefix}-${nameHash}@kuzyak.in`;
 };
 
-const generateIcs = (year, holidays) => {
+const generateIcsEvents = (year, holidays) => {
   const shortDays = getShortDays(year);
   const workingHolidays = getWorkingHolidays(year);
   const transferredHolidays = getTransferredHolidays(year);
@@ -301,14 +301,41 @@ const generateIcs = (year, holidays) => {
     ].join('\n'));
   });
 
-  const events = allEvents;
+  return allEvents;
+};
+
+const generateIcs = (year, holidays) => {
+  const events = generateIcsEvents(year, holidays);
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'PRODID:-//kuzyak.in//NONSGML Production Calendar//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
     `X-WR-CALNAME:Производственный календарь ${year}`,
     'X-WR-TIMEZONE:Europe/Moscow',
     ...events,
+    'END:VCALENDAR',
+  ].join('\n');
+};
+
+const generateSubscriptionIcs = (allYears) => {
+  const allEvents = [];
+  for (const year of allYears) {
+    allEvents.push(...generateIcsEvents(year, getHolidays(year)));
+  }
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//kuzyak.in//NONSGML Production Calendar//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'X-WR-CALNAME:Производственный календарь РФ',
+    'X-WR-CALDESC:Официальные праздники, сокращенные дни и переносы выходных дней в Российской Федерации',
+    'X-WR-TIMEZONE:Europe/Moscow',
+    'REFRESH-INTERVAL;VALUE=DURATION:P1W',
+    'X-PUBLISHED-TTL:P1W',
+    ...allEvents,
     'END:VCALENDAR',
   ].join('\n');
 };
@@ -323,6 +350,10 @@ writeJSON(path.join(outRoot, 'index.json'), {
   status: 200,
 });
 
+// /api/calendar/ics (Subscription endpoint with all available years)
+const subscriptionIcs = generateSubscriptionIcs(years);
+writeText(path.join(outRoot, 'ics', 'index.ics'), subscriptionIcs);
+
 for (const y of years) {
   // /api/calendar/{year}
   writeJSON(path.join(outRoot, `${y}.json`), {
@@ -334,7 +365,11 @@ for (const y of years) {
 
   // /api/calendar/{year}/ics
   const icsData = generateIcs(y, getHolidays(y));
-  writeText(path.join(outRoot, `${y}.ics`), icsData);
+  writeText(path.join(outRoot, 'ics', `${y}.ics`), icsData);
+  const legacyIcs = path.join(outRoot, `${y}.ics`);
+  if (fs.existsSync(legacyIcs)) {
+    fs.unlinkSync(legacyIcs);
+  }
 
   // /api/calendar/{year}/holidays
   const holidays = getHolidays(y)

@@ -158,6 +158,24 @@
         }
       }
     },
+    "/api/calendar/ics": {
+      "get": {
+        "summary": "Подписка на производственный календарь (все годы)",
+        "description": "Возвращает единый файл .ics со всеми доступными годами для оформления подписки в Google Calendar, Apple Calendar, Outlook и других календарных сервисах. Поддерживает автообновление через протокол webcal://.",
+        "responses": {
+          "200": {
+            "description": "Календарь в формате iCalendar (RFC 5545)",
+            "content": {
+              "text/calendar": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/calendar/{year}/ics": {
       "get": {
         "summary": "Получить календарь на год в формате iCalendar",

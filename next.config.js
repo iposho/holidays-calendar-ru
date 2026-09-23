@@ -22,8 +22,14 @@ const nextConfig = {
     return [
       // Root calendar endpoint
       { source: '/api/calendar', destination: '/static-api/calendar/index.json' },
-      // Day-level must come before month-level
-      { source: '/api/calendar/:year(\\d{4})/ics', destination: '/static-api/calendar/:year.ics' },
+      // All-years subscription calendar (.ics)
+      { source: '/api/calendar/ics', destination: '/static-api/calendar/ics/index.ics' },
+      { source: '/api/calendar/subscribe.ics', destination: '/static-api/calendar/ics/index.ics' },
+      { source: '/api/calendar/calendar.ics', destination: '/static-api/calendar/ics/index.ics' },
+      { source: '/static-api/calendar/ics', destination: '/static-api/calendar/ics/index.ics' },
+      // Single-year calendar (.ics)
+      { source: '/api/calendar/:year(\\d{4})/ics', destination: '/static-api/calendar/ics/:year.ics' },
+      { source: '/static-api/calendar/:year(\\d{4})\\.ics', destination: '/static-api/calendar/ics/:year.ics' },
       { source: '/api/calendar/:year(\\d{4})/:month(\\d{1,2})/:day(\\d{1,2})', destination: '/static-api/calendar/:year/:month/:day.json' },
       { source: '/api/calendar/:year(\\d{4})/:month(\\d{1,2})', destination: '/static-api/calendar/:year/:month.json' },
       { source: '/api/calendar/:year(\\d{4})/holidays', destination: '/static-api/calendar/:year/holidays.json' },
@@ -32,6 +38,30 @@ const nextConfig = {
   },
   async headers() {
     return [
+      {
+        source: '/api/calendar/ics',
+        headers: [
+          { key: 'Content-Type', value: 'text/calendar; charset=utf-8' },
+          { key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=86400, must-revalidate' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
+        ],
+      },
+      {
+        source: '/static-api/calendar/ics/index.ics',
+        headers: [
+          { key: 'Content-Type', value: 'text/calendar; charset=utf-8' },
+          { key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=86400, must-revalidate' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
+        ],
+      },
+      {
+        source: '/static-api/calendar/ics/:year(\\d{4})\\.ics',
+        headers: [
+          { key: 'Content-Type', value: 'text/calendar; charset=utf-8' },
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=31536000, must-revalidate' },
+          { key: 'ETag', value: `"calendar-${packageJson.version}-${buildDate.split('T')[0]}"` },
+        ],
+      },
       {
         source: '/static-api/calendar/:year(\\d{4})\\.ics',
         headers: [
