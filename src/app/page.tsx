@@ -1,6 +1,7 @@
 import React from 'react';
 import { HeroSection } from '@/components/hero-section';
 import { FeaturesSection } from '@/components/features-section';
+import { CalendarSubscription } from '@/components/calendar-subscription';
 import { ApiEndpoints } from '@/components/api-endpoints';
 import { CodePreview } from '@/components/code-preview';
 import { Footer } from '@/components/footer';
@@ -14,6 +15,7 @@ export default function HomePage() {
       <main>
         <HeroSection />
         <FeaturesSection />
+        <CalendarSubscription />
         <CodePreview />
         <ApiEndpoints />
       </main>

@@ -46,6 +46,11 @@ export function middleware(request: NextRequest) {
   // /api/calendar/2025/01/05 -> ['api', 'calendar', '2025', '01', '05']
 
   if (pathParts.length >= 3) {
+    // Подписка на календарь со всеми годами (/api/calendar/ics, /api/calendar/subscribe.ics)
+    if (pathParts.length === 3 && (pathParts[2] === 'ics' || pathParts[2] === 'subscribe.ics' || pathParts[2] === 'calendar.ics')) {
+      return withSecurityHeaders(NextResponse.next());
+    }
+
     const year = parseInt(pathParts[2], 10);
 
     // Валидация года
