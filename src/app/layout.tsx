@@ -13,7 +13,7 @@ interface LayoutProps {
 
 export const metadata: Metadata = {
   title: 'Производственный календарь РФ API',
-  description: 'Производственные календари РФ (2023—2025) в формате JSON. Простой API для получения данных.',
+  description: 'Производственные календари РФ (2023—2026) в формате JSON. Простой API для получения данных.',
   metadataBase: new URL('https://calendar.kuzyak.in'),
   alternates: {
     canonical: '/',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [new URL('/opengraph-image.png', 'https://calendar.kuzyak.in')],
     title: 'Производственный календарь РФ API',
-    description: 'Производственные календари РФ (2023—2025) в формате JSON. Простой API для получения данных.',
+    description: 'Производственные календари РФ (2023—2026) в формате JSON. Простой API для получения данных.',
   },
   verification: {
     yandex: 'a52f1210dfd6f94c',
