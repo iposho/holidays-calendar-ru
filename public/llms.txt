@@ -1,0 +1,49 @@
+# Производственный календарь РФ API
+
+> Бесплатный открытый REST API производственных календарей Российской Федерации за 2023–2027 годы: рабочие, выходные, праздничные, сокращенные (предпраздничные) дни и переносы выходных по постановлениям Правительства РФ. Ответы в JSON, годовой календарь также в формате iCalendar (.ics). Без авторизации и ключей.
+
+Базовый URL: `https://calendar.kuzyak.in`. Все запросы — `GET`. Даты в ответах — ISO 8601 в UTC (`2026-01-09T00:00:00.000Z`), дату следует читать как календарный день без учета часового пояса. Номер месяца в пути — 1–12 (допускается `01` и `1`), а поле `month.id` в ответах — 0–11.
+
+Источник данных — производственный календарь КонсультантПлюс (https://www.consultant.ru/law/ref/calendar/proizvodstvennye/) и постановления Правительства РФ о переносе выходных дней. Данные сверяются тестами с каждым днем календаря и с годовыми нормами рабочего времени.
+
+## Эндпоинты
+
+- [Список годов](https://calendar.kuzyak.in/api/calendar): `GET /api/calendar` → `{ "years": [2023, 2024, 2025, 2026, 2027], "status": 200 }`
+- [Календарь на год](https://calendar.kuzyak.in/api/calendar/2027): `GET /api/calendar/{year}` → `year`, `months[]` (для каждого месяца: `id` 0–11, `name`, `workingDays`, `notWorkingDays`, `shortDays`, `workingHours` при 40-часовой неделе), `decree`
+- [Праздники года](https://calendar.kuzyak.in/api/calendar/2026/holidays): `GET /api/calendar/{year}/holidays` → `holidays[]` (нерабочие праздничные дни по ст. 112 ТК РФ), `shortDays[]` (сокращенные на 1 час дни), `transferredHolidays[]` (перенесенные выходные, поле `from` — исходная дата), `workingWeekends[]` (выходные, ставшие рабочими), `decree`. Элементы списков: `{ "date", "name" }`
+- [Календарь iCalendar](https://calendar.kuzyak.in/api/calendar/2027/ics): `GET /api/calendar/{year}/ics` → файл `text/calendar` с праздниками, сокращенными днями, перенесенными выходными и рабочими субботами; подходит для подписки в Google Calendar, Apple Calendar, Outlook
+- [Месяц](https://calendar.kuzyak.in/api/calendar/2026/05): `GET /api/calendar/{year}/{month}` → `month: { id, name, workingDays, notWorkingDays, shortDays, workingHours }`
+- [День](https://calendar.kuzyak.in/api/calendar/2026/01/09): `GET /api/calendar/{year}/{month}/{day}` → `date`, `isWorkingDay`, `isShortDay`, а также `holiday` (название праздника) или `transferredHoliday` (название перенесенного выходного), если применимо
+
+Поле `decree` — постановление Правительства РФ о переносе выходных: `{ "title", "number", "date", "url", "calendarUrl" }`.
+
+## Примеры
+
+Является ли день рабочим:
+
+```bash
+curl "https://calendar.kuzyak.in/api/calendar/2026/01/09"
+# {"year":2026,"month":{"name":"January","id":0},"date":"2026-01-09T00:00:00.000Z","isWorkingDay":false,"isShortDay":false,"status":200,"transferredHoliday":"Перенесенный выходной с 3 января"}
+```
+
+Число рабочих дней и часов в месяце:
+
+```bash
+curl "https://calendar.kuzyak.in/api/calendar/2026/05"
+# {"year":2026,"month":{"id":4,"name":"May","workingDays":19,"notWorkingDays":12,"shortDays":1,"workingHours":151},"status":200}
+```
+
+## Ошибки
+
+Невалидные параметры возвращают JSON `{ "error": "...", "status": 422 }`: `Invalid year` (год вне доступного диапазона), `Invalid month`, `Invalid day` (включая несуществующие даты, например 29 февраля невисокосного года). `404` — ресурс не найден.
+
+## Документация
+
+- [Swagger UI](https://calendar.kuzyak.in/swagger): интерактивная документация всех эндпоинтов
+- [OpenAPI-спецификация](https://calendar.kuzyak.in/swagger.json): схема API в формате OpenAPI 3.0
+- [README](https://github.com/iposho/holidays-calendar-ru/blob/main/README.md): описание API, форматов ответа и обновления данных
+
+## Optional
+
+- [Исходный код на GitHub](https://github.com/iposho/holidays-calendar-ru): Next.js, лицензия MIT, можно развернуть самостоятельно (есть Dockerfile)
+- [CHANGELOG](https://github.com/iposho/holidays-calendar-ru/blob/main/CHANGELOG.md): история изменений

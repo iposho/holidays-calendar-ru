@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Тесты: сверка каждого дня со снимком consultant.ru, годовые нормы рабочего времени, парсер
 - **CI**: workflow «Update Calendar» — ручное обновление календаря из GitHub Actions с автоматическим PR в `develop`
 - **Docs**: эндпоинт `/api/calendar/{year}/ics` описан в README, Swagger и на главной странице
+- **Docs**: `/llms.txt` — описание API для LLM и AI-агентов
 
 ### Changed
 - `holidays` теперь содержит только праздничные дни по ст. 112 ТК РФ (в том числе выпавшие на выходные),
