@@ -18,8 +18,13 @@ const endpoints = [
   },
   {
     method: 'GET',
+    path: '/api/calendar/ics',
+    description: 'Подписка на календарь (.ics со всеми годами и автообновлением)',
+  },
+  {
+    method: 'GET',
     path: '/api/calendar/{year}/ics',
-    description: 'Календарь в формате iCalendar (.ics)',
+    description: 'Календарь на выбранный год в формате iCalendar (.ics)',
   },
   {
     method: 'GET',

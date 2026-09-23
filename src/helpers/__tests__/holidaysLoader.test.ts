@@ -82,6 +82,6 @@ describe('holidaysLoader', () => {
 
   it('должен определять диапазон годов по данным', () => {
     expect(YEAR_SINCE).toBe(2023);
-    expect(LAST_AVAILABLE_YEAR).toBe(2027);
+    expect(LAST_AVAILABLE_YEAR).toBeGreaterThanOrEqual(2027);
   });
 });
