@@ -31,11 +31,11 @@ const codeExamples = [
   {
     lang: 'JavaScript',
     language: 'javascript',
-    code: '// Получение календаря на 2024 год\n'
-      + 'fetch(\'https://calendar.kuzyak.in/api/calendar/2024\')\n'
+    code: '// Праздничные дни на 2027 год\n'
+      + 'fetch(\'https://calendar.kuzyak.in/api/calendar/2027/holidays\')\n'
       + '  .then(res => res.json())\n'
       + '  .then(data => {\n'
-      + '    console.log(\'Праздничные дни:\', data.days);\n'
+      + '    console.log(\'Праздничные дни:\', data.holidays);\n'
       + '  });',
   },
   {
@@ -43,18 +43,18 @@ const codeExamples = [
     language: 'python',
     code: 'import requests\n\n'
       + '# Запрос данных для конкретного месяца\n'
-      + 'url = "https://calendar.kuzyak.in/api/calendar/2024/05"\n'
+      + 'url = "https://calendar.kuzyak.in/api/calendar/2026/05"\n'
       + 'response = requests.get(url)\n\n'
       + 'if response.status_code == 200:\n'
       + '    data = response.json()\n'
-      + '    print(f"Рабочих дней в мае: {data[\'statistics\'][\'work\']}")',
+      + '    print(f"Рабочих дней в мае: {data[\'month\'][\'workingDays\']}")',
   },
   {
     lang: 'cURL',
     language: 'bash',
     code: '# Проверка статуса конкретного дня\n'
       + 'curl -X GET \\\n'
-      + '  "https://calendar.kuzyak.in/api/calendar/2024/01/01" \\\n'
+      + '  "https://calendar.kuzyak.in/api/calendar/2026/01/09" \\\n'
       + '  -H "Accept: application/json"',
   },
 ];

@@ -1,0 +1,96 @@
+name: Update Calendar
+
+# Ручной запуск: Actions → Update Calendar → Run workflow (только владелец репозитория).
+# Скачивает производственный календарь с consultant.ru, пересобирает src/data,
+# прогоняет тесты и открывает PR в develop, если данные изменились.
+on:
+  workflow_dispatch:
+    inputs:
+      year:
+        description: 'Год (например, 2027)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-calendar-${{ inputs.year }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    # Запуск разрешен только владельцу репозитория
+    if: github.actor == github.repository_owner
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate year
+        env:
+          YEAR: ${{ inputs.year }}
+        run: |
+          if ! [[ "$YEAR" =~ ^20[0-9]{2}$ ]]; then
+            echo "::error::Некорректный год: $YEAR"
+            exit 1
+          fi
+
+      - name: Checkout develop
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Update calendar data
+        env:
+          YEAR: ${{ inputs.year }}
+        run: npm run update-calendar -- "$YEAR"
+
+      - name: Run tests
+        run: npm test
+
+      - name: Create pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          YEAR: ${{ inputs.year }}
+        run: |
+          if [ -z "$(git status --porcelain -- src/data)" ]; then
+            echo "Данные за $YEAR год не изменились — PR не нужен." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          BRANCH="calendar/update-$YEAR-$(date -u +%Y%m%d-%H%M%S)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add src/data
+          git commit -m "feat(data): обновить производственный календарь на $YEAR год"
+          git push origin "$BRANCH"
+
+          {
+            echo "Автоматическое обновление данных с consultant.ru: https://www.consultant.ru/law/ref/calendar/proizvodstvennye/$YEAR/"
+            echo
+            echo "Тесты пройдены. Проверьте изменения перед мерджем."
+            echo
+            echo '```'
+            git diff --stat HEAD~1
+            echo '```'
+          } > pr-body.md
+
+          if URL=$(gh pr create --base develop --head "$BRANCH" \
+            --title "feat(data): производственный календарь на $YEAR год" \
+            --body-file pr-body.md); then
+            echo "PR: $URL" | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            # Если в настройках репозитория Actions запрещено создавать PR
+            COMPARE="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/compare/develop...$BRANCH?expand=1"
+            echo "Не удалось создать PR автоматически. Откройте вручную: $COMPARE" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi

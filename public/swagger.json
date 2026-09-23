@@ -158,6 +158,45 @@
         }
       }
     },
+    "/api/calendar/{year}/ics": {
+      "get": {
+        "summary": "Получить календарь на год в формате iCalendar",
+        "description": "Возвращает файл .ics с праздничными, сокращенными, перенесенными и рабочими выходными днями для импорта в Google Calendar, Apple Calendar, Outlook и другие календари.",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "path",
+            "required": true,
+            "description": "Год календаря",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Календарь в формате iCalendar (RFC 5545)",
+            "content": {
+              "text/calendar": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Неверный год",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/calendar/{year}/{month}": {
       "get": {
         "summary": "Получить календарь на месяц",
