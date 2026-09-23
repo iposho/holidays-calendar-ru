@@ -1,0 +1,64 @@
+{
+  "2023": {
+    "title": "Постановление Правительства РФ от 29.08.2022 № 1505 «О переносе выходных дней в 2023 году»",
+    "number": "1505",
+    "date": "2022-08-29",
+    "url": "http://publication.pravo.gov.ru/Document/View/0001202208300023",
+    "calendarUrl": "https://www.consultant.ru/law/ref/calendar/proizvodstvennye/2023/",
+    "transfers": [
+      { "from": "2023-01-01", "to": "2023-02-24" },
+      { "from": "2023-01-08", "to": "2023-05-08" }
+    ]
+  },
+  "2024": {
+    "title": "Постановление Правительства РФ от 10.08.2023 № 1314 «О переносе выходных дней в 2024 году»",
+    "number": "1314",
+    "date": "2023-08-10",
+    "url": "http://publication.pravo.gov.ru/document/0001202308180053",
+    "calendarUrl": "https://www.consultant.ru/law/ref/calendar/proizvodstvennye/2024/",
+    "transfers": [
+      { "from": "2024-01-06", "to": "2024-05-10" },
+      { "from": "2024-01-07", "to": "2024-12-31" },
+      { "from": "2024-04-27", "to": "2024-04-29" },
+      { "from": "2024-11-02", "to": "2024-04-30" },
+      { "from": "2024-12-28", "to": "2024-12-30" }
+    ]
+  },
+  "2025": {
+    "title": "Постановление Правительства РФ от 04.10.2024 № 1335 «О переносе выходных дней в 2025 году»",
+    "number": "1335",
+    "date": "2024-10-04",
+    "url": "http://publication.pravo.gov.ru/document/0001202410040023",
+    "calendarUrl": "https://www.consultant.ru/law/ref/calendar/proizvodstvennye/2025/",
+    "transfers": [
+      { "from": "2025-01-04", "to": "2025-05-02" },
+      { "from": "2025-01-05", "to": "2025-12-31" },
+      { "from": "2025-02-23", "to": "2025-05-08" },
+      { "from": "2025-03-08", "to": "2025-06-13" },
+      { "from": "2025-11-01", "to": "2025-11-03" }
+    ]
+  },
+  "2026": {
+    "title": "Постановление Правительства РФ от 24.09.2025 № 1466 «О переносе выходных дней в 2026 году»",
+    "number": "1466",
+    "date": "2025-09-24",
+    "url": "http://publication.pravo.gov.ru/document/0001202509240023",
+    "calendarUrl": "https://www.consultant.ru/law/ref/calendar/proizvodstvennye/2026/",
+    "transfers": [
+      { "from": "2026-01-03", "to": "2026-01-09" },
+      { "from": "2026-01-04", "to": "2026-12-31" }
+    ]
+  },
+  "2027": {
+    "title": "Постановление Правительства РФ от 17.09.2026 № 1187 «О переносе выходных дней в 2027 году»",
+    "number": "1187",
+    "date": "2026-09-17",
+    "url": "https://www.garant.ru/hotlaw/federal/2245207/",
+    "calendarUrl": "https://www.consultant.ru/law/ref/calendar/proizvodstvennye/2027/",
+    "transfers": [
+      { "from": "2027-01-02", "to": "2027-11-05" },
+      { "from": "2027-01-03", "to": "2027-12-31" },
+      { "from": "2027-02-20", "to": "2027-02-22" }
+    ]
+  }
+}

@@ -316,6 +316,7 @@
               "$ref": "#/components/schemas/Month"
             }
           },
+          "decree": { "$ref": "#/components/schemas/Decree" },
           "status": { "type": "integer" }
         }
       },
@@ -336,6 +337,7 @@
           "year": { "type": "integer" },
           "holidays": {
             "type": "array",
+            "description": "Нерабочие праздничные дни по ст. 112 ТК РФ, включая выпавшие на выходные",
             "items": {
               "$ref": "#/components/schemas/Holiday"
             }
@@ -348,10 +350,19 @@
           },
           "transferredHolidays": {
             "type": "array",
+            "description": "Дополнительные выходные, появившиеся в результате переноса (постановлением Правительства РФ или по ч. 2 ст. 112 ТК РФ)",
+            "items": {
+              "$ref": "#/components/schemas/TransferredHoliday"
+            }
+          },
+          "workingWeekends": {
+            "type": "array",
+            "description": "Выходные дни (сб/вс), ставшие рабочими в результате переноса",
             "items": {
               "$ref": "#/components/schemas/Holiday"
             }
           },
+          "decree": { "$ref": "#/components/schemas/Decree" },
           "status": { "type": "integer" }
         }
       },
@@ -360,6 +371,26 @@
         "properties": {
           "date": { "type": "string", "format": "date" },
           "name": { "type": "string" }
+        }
+      },
+      "TransferredHoliday": {
+        "type": "object",
+        "properties": {
+          "date": { "type": "string", "format": "date", "description": "Дата перенесенного выходного" },
+          "name": { "type": "string", "example": "Перенесенный выходной с 3 января" },
+          "from": { "type": "string", "format": "date", "description": "Исходная дата выходного, с которой выполнен перенос" }
+        }
+      },
+      "Decree": {
+        "type": "object",
+        "nullable": true,
+        "description": "Постановление Правительства РФ о переносе выходных дней",
+        "properties": {
+          "title": { "type": "string", "example": "Постановление Правительства РФ от 24.09.2025 № 1466 «О переносе выходных дней в 2026 году»" },
+          "number": { "type": "string", "example": "1466" },
+          "date": { "type": "string", "format": "date", "example": "2025-09-24" },
+          "url": { "type": "string", "format": "uri", "description": "Ссылка на текст постановления" },
+          "calendarUrl": { "type": "string", "format": "uri", "description": "Производственный календарь на consultant.ru" }
         }
       },
       "MonthlyCalendar": {
@@ -387,6 +418,7 @@
           "isWorkingDay": { "type": "boolean" },
           "isShortday": { "type": "boolean" },
           "holiday": { "type": "string" },
+          "transferredHoliday": { "type": "string", "description": "Название перенесенного выходного, если день является таковым" },
           "status": { "type": "integer" }
         }
       },

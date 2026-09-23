@@ -1,6 +1,6 @@
 {
   "name": "holidays-calendar-ru",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "Производственный календарь",
   "author": "Pavel Kuzyakin <pavel@kuzyak.in> (https://kuzyak.in)",
   "homepage": "https://github.com/iposho/holidays-calendar-ru#readme",
@@ -8,10 +8,11 @@
     "predev": "node scripts/generate-static-api.js",
     "dev": "next dev -p 5000",
     "generate-api": "node scripts/generate-static-api.js",
+    "update-calendar": "node scripts/update-calendar.js",
     "prebuild": "node scripts/generate-static-api.js",
     "build": "next build",
     "start": "next start",
-    "eslint": "next lint",
+    "eslint": "eslint src --ext .ts,.tsx",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "prepare": "husky"
@@ -43,6 +44,7 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "husky": "^9.1.1",
     "jest": "^29.7.0",
+    "node-html-parser": "^9.0.4",
     "postcss": "^8.5.10",
     "tailwindcss": "^4.1.18",
     "ts-jest": "^29.2.5"
