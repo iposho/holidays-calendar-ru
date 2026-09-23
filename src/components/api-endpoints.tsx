@@ -14,7 +14,12 @@ const endpoints = [
   {
     method: 'GET',
     path: '/api/calendar/{year}/holidays',
-    description: 'Праздничные и сокращенные дни',
+    description: 'Праздничные, сокращенные и перенесенные дни',
+  },
+  {
+    method: 'GET',
+    path: '/api/calendar/{year}/ics',
+    description: 'Календарь в формате iCalendar (.ics)',
   },
   {
     method: 'GET',

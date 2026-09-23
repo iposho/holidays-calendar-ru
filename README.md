@@ -81,6 +81,12 @@ npm run generate-api  # Перегенерировать статические 
 3. Запустите `npm test` — тесты сверяют каждый день года со снимком consultant.ru,
    годовые нормы рабочего времени и наличие постановления.
 
+#### Через GitHub Actions
+
+Workflow **Update Calendar** запускается вручную и только владельцем репозитория: *Actions → Update Calendar → Run workflow*, указать год.
+Он выполнит `npm run update-calendar -- <год>` и `npm test` на ветке `develop` и, если данные изменились,
+откроет PR в `develop`. Запись в `decrees.json` для нового года нужно добавить заранее (шаг 1).
+
 ---
 
 ## 🚀 Быстрый старт
@@ -104,6 +110,9 @@ curl "https://calendar.kuzyak.in/api/calendar/2023/01/5"   # mixed
 
 # Праздники года
 curl "https://calendar.kuzyak.in/api/calendar/2023/holidays"
+
+# Календарь в формате iCalendar (.ics)
+curl "https://calendar.kuzyak.in/api/calendar/2027/ics"
 ```
 
 ### Обработка ошибок
@@ -209,6 +218,16 @@ GET /api/calendar/{year}/holidays
   }
 }
 ```
+
+### 🗓️ Календарь в формате iCalendar
+
+```http
+GET /api/calendar/{year}/ics
+```
+
+Файл `.ics` с праздниками, сокращенными днями, перенесенными выходными и рабочими субботами.
+Подходит для импорта или подписки в Google Calendar, Apple Calendar и Outlook:
+`https://calendar.kuzyak.in/api/calendar/2027/ics`.
 
 ### 📆 Календарь на месяц
 

@@ -49,6 +49,14 @@ const loadHtml = async (year, htmlPath) => {
 const saveSnapshot = (parsed) => {
   fs.mkdirSync(SNAPSHOT_DIR, { recursive: true });
   const file = path.join(SNAPSHOT_DIR, `${parsed.year}.json`);
+  if (fs.existsSync(file)) {
+    const prev = readJson(file);
+    const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+    if (same(prev.nonWorkingDays, parsed.nonWorkingDays) && same(prev.shortDays, parsed.shortDays)) {
+      console.log(`[update-calendar] Снимок ${parsed.year} года не изменился`);
+      return;
+    }
+  }
   const snapshot = {
     year: parsed.year,
     source: consultantUrl(parsed.year),
