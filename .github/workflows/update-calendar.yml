@@ -2,7 +2,8 @@ name: Update Calendar
 
 # Ручной запуск: Actions → Update Calendar → Run workflow (только владелец репозитория).
 # Скачивает производственный календарь с consultant.ru, пересобирает src/data,
-# прогоняет тесты и открывает PR в develop, если данные изменились.
+# при необходимости создает запись в decrees.json, прогоняет тесты
+# и открывает PR в develop, если данные изменились.
 on:
   workflow_dispatch:
     inputs:

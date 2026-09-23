@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Data**: `update-calendar` сам создает запись в `decrees.json` для нового года по странице consultant.ru — реквизиты постановления, переносы и ссылку на publication.pravo.gov.ru
+
+### Changed
+- **Data**: ссылка на постановление 2027 года ведет на официальный портал publication.pravo.gov.ru
+
+### Fixed
+- **Data**: `update-calendar` падает с ошибкой, если consultant.ru перенаправил на календарь другого года (страница 2024 года теперь открывает 2025)
+
 ## [1.16.0] - 2026-09-24
 
 ### Added

@@ -11,7 +11,7 @@
 */
 
 const { parse } = require('node-html-parser');
-const { MONTHS_RU, toIso } = require('./core');
+const { MONTHS_RU, MONTHS_RU_GENITIVE, toIso } = require('./core');
 
 const daysInMonth = (year, month /* 0-11 */) => new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
 
@@ -36,6 +36,21 @@ const extractDecree = (text) => {
     number,
     isDraft: /проект[а-я]*\s+постановлени/i.test(text),
   };
+};
+
+// «...перенесены следующие выходные дни: с субботы 3 января на пятницу 9 января; ...» ->
+// [{ from: '2026-01-03', to: '2026-01-09' }, ...]. Год даты берется из текста («28 декабря 2024 года») или из календаря.
+const extractTransfers = (text, year) => {
+  const list = text.match(/следующ[а-я]*\s+выходн[а-я]*\s+дн[а-я]*\s*:([^.]*)/i);
+  if (!list) return [];
+  const months = MONTHS_RU_GENITIVE.join('|');
+  const date = `(\\d{1,2})\\s+(${months})(?:\\s+(\\d{4})\\s*(?:г\\.|года?)?)?`;
+  const re = new RegExp(`с\\s+[а-я]+\\s+${date}\\s+на\\s+[а-я]+\\s+${date}`, 'gi');
+  const toDate = (day, month, y) => toIso(y ? Number(y) : year, MONTHS_RU_GENITIVE.indexOf(month.toLowerCase()), Number(day));
+  return [...list[1].matchAll(re)].map((m) => ({
+    from: toDate(m[1], m[2], m[3]),
+    to: toDate(m[4], m[5], m[6]),
+  }));
 };
 
 const hasClass = (el, cls) => (el.getAttribute('class') || '').split(/\s+/).includes(cls);
@@ -68,20 +83,28 @@ const parseMonthTable = (table, year, month, result) => {
  * @param {string} html
  * @param {{ year?: number }} [options]
  * @returns {{ year: number, nonWorkingDays: string[], shortDays: string[], noWorkDays: string[],
- *   decree: { date: string, number: string, isDraft: boolean } | null }}
+ *   decree: { date: string, number: string, isDraft: boolean } | null,
+ *   transfers: { from: string, to: string }[] }}
  */
 const parseConsultantHtml = (html, options = {}) => {
   const root = parse(html);
-  const year = options.year || extractYear(root);
+  const pageYear = extractYear(root);
+  const year = options.year || pageYear;
   if (!year) throw new Error('consultant.ru: не удалось определить год календаря');
+  // consultant.ru перенаправляет страницы старых лет на текущий год
+  if (pageYear && pageYear !== year) {
+    throw new Error(`consultant.ru: вместо календаря на ${year} год получена страница ${pageYear} года`);
+  }
 
   const content = root.querySelector('#content') || root;
+  const text = normalizeSpaces(content.text);
   const result = {
     year,
     nonWorkingDays: [],
     shortDays: [],
     noWorkDays: [],
-    decree: extractDecree(normalizeSpaces(content.text)),
+    decree: extractDecree(text),
+    transfers: extractTransfers(text, year),
   };
 
   const seenMonths = new Set();
@@ -105,4 +128,4 @@ const parseConsultantHtml = (html, options = {}) => {
   return result;
 };
 
-module.exports = { parseConsultantHtml, extractDecree };
+module.exports = { parseConsultantHtml, extractDecree, extractTransfers };
