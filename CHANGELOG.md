@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.0] - 2026-09-23
+
+### Added
+- Производственный календарь на 2027 год (постановление Правительства РФ от 17.09.2026 № 1187)
+- `src/data/decrees.json` — постановления Правительства РФ о переносе выходных за 2023–2027 годы со ссылками
+- Поле `decree` в ответах `/api/calendar/{year}` и `/api/calendar/{year}/holidays`
+- Поля `from` у перенесенных выходных и `workingWeekends` в ответе `/api/calendar/{year}/holidays` (#84)
+- Скрипт `npm run update-calendar` — загрузка и разбор календаря с consultant.ru, сборка данных
+- Тесты: сверка каждого дня со снимком consultant.ru, годовые нормы рабочего времени, парсер
+
+### Changed
+- `holidays` теперь содержит только праздничные дни по ст. 112 ТК РФ (в том числе выпавшие на выходные),
+  а перенесенные выходные — в `transferredHolidays` (без дублирования)
+- Единые названия праздников для всех годов
+- Диапазон доступных годов определяется по данным
+
+### Fixed
+- 2024: 27 апреля — рабочая суббота, 29 апреля — выходной (перенос по постановлению № 1314)
+- 2026: 9 января и 31 декабря больше не дублируются в списке праздников (#84)
+
 ## [1.15.0] - 2025-01-15
 
 ### Added

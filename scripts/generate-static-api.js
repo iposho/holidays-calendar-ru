@@ -11,6 +11,7 @@ const holidaysSource = require(path.join(process.cwd(), 'src', 'data', 'holidays
 const shortDaysSource = require(path.join(process.cwd(), 'src', 'data', 'shortDays.json'));
 const workingHolidaysSource = require(path.join(process.cwd(), 'src', 'data', 'workingHolidays.json'));
 const transferredHolidaysSource = require(path.join(process.cwd(), 'src', 'data', 'transferredHolidays.json'));
+const decreesSource = require(path.join(process.cwd(), 'src', 'data', 'decrees.json'));
 
 // ---- Utils ----
 const ensureDir = (dirPath) => {
@@ -57,7 +58,8 @@ for (const year of years) {
   const holidays = (holidaysSource[String(year)] || []).map(({ month, day, name, isHoliday }) => createDateString(year, month, day, name, isHoliday));
   const shortDays = (shortDaysSource[String(year)] || []).map(({ month, day, name }) => createDateString(year, month, day, name));
   const workingHolidays = (workingHolidaysSource[String(year)] || []).map(({ month, day, name }) => createDateString(year, month, day, name));
-  const transferredHolidays = (transferredHolidaysSource[String(year)] || []).map(({ month, day, name }) => createDateString(year, month, day, name));
+  const transferredHolidays = (transferredHolidaysSource[String(year)] || [])
+    .map(({ month, day, name, from }) => ({ ...createDateString(year, month, day, name), from }));
   processedHolidays[year] = holidays;
   processedShortDays[year] = shortDays;
   processedWorkingHolidays[year] = workingHolidays;
@@ -68,6 +70,19 @@ const getHolidays = (year) => processedHolidays[year] || [];
 const getShortDays = (year) => processedShortDays[year] || [];
 const getWorkingHolidays = (year) => processedWorkingHolidays[year] || [];
 const getTransferredHolidays = (year) => processedTransferredHolidays[year] || [];
+
+// Постановление Правительства РФ о переносе выходных дней (без внутреннего списка переносов)
+const getDecree = (year) => {
+  const decree = decreesSource[String(year)];
+  if (!decree) return null;
+  return {
+    title: decree.title,
+    number: decree.number,
+    date: decree.date,
+    url: decree.url,
+    calendarUrl: decree.calendarUrl,
+  };
+};
 
 // ---- Calculations ----
 const countWorkingDays = (year, month /* 0-11 */) => {
@@ -131,10 +146,8 @@ const isWeekend = (date) => {
   return day === 0 || day === 6;
 };
 
-const isWeekendWorking = (date, workingHolidays) => {
-  const day = date.getUTCDay();
-  return day === 6 && workingHolidays.some((e) => new Date(e.date).valueOf() === date.valueOf());
-};
+const isWeekendWorking = (date, workingHolidays) => isWeekend(date)
+  && workingHolidays.some((e) => new Date(e.date).valueOf() === date.valueOf());
 
 const makeDayInfo = (year, month /* 1-12 */, day) => {
   const date = new Date(Date.UTC(year, month - 1, day));
@@ -252,7 +265,7 @@ const generateIcs = (year, holidays) => {
       `DTEND;VALUE=DATE:${end}`,
       `DTSTAMP:${now}Z`,
       `UID:${uid}`,
-      `SUMMARY:${workingHoliday.name} (рабочий выходной)`,
+      `SUMMARY:${workingHoliday.name}`,
       'CATEGORIES:WORKING_HOLIDAY',
       'END:VEVENT',
     ].join('\n'));
@@ -308,6 +321,7 @@ for (const y of years) {
   writeJSON(path.join(outRoot, `${y}.json`), {
     year: y,
     months: generateMonths(y),
+    decree: getDecree(y),
     status: 200,
   });
 
@@ -320,12 +334,19 @@ for (const y of years) {
     .filter((h) => h.isHoliday !== false)
     .map((h) => ({ date: new Date(h.date).toISOString(), name: h.name }));
   const shortDays = getShortDays(y).map((s) => ({ date: new Date(s.date).toISOString(), name: s.name }));
-  const transferredHolidays = getTransferredHolidays(y).map((th) => ({ date: new Date(th.date).toISOString(), name: th.name }));
+  const transferredHolidays = getTransferredHolidays(y).map((th) => ({
+    date: new Date(th.date).toISOString(),
+    name: th.name,
+    from: new Date(th.from).toISOString(),
+  }));
+  const workingWeekends = getWorkingHolidays(y).map((w) => ({ date: new Date(w.date).toISOString(), name: w.name }));
   writeJSON(path.join(outRoot, String(y), 'holidays.json'), {
     year: y,
     holidays,
     shortDays,
     transferredHolidays,
+    workingWeekends,
+    decree: getDecree(y),
     status: 200,
   });
 
