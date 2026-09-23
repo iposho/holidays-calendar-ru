@@ -203,7 +203,14 @@ const generateIcs = (year, holidays) => {
   const workingHolidays = getWorkingHolidays(year);
   const transferredHolidays = getTransferredHolidays(year);
 
-  const allEvents = holidays.map((holiday) => {
+  // Перенесенные дни выводятся отдельными событиями ниже, поэтому исключаем
+  // их из списка праздников, чтобы не получить два события на одну дату
+  const transferredDates = new Set(transferredHolidays.map((th) => new Date(th.date).valueOf()));
+  const baseHolidays = holidays.filter(
+    (h) => h.isHoliday !== false && !transferredDates.has(new Date(h.date).valueOf()),
+  );
+
+  const allEvents = baseHolidays.map((holiday) => {
     const startDate = new Date(holiday.date);
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + 1);
