@@ -15,6 +15,8 @@
      список переносов, ссылка на текст с publication.pravo.gov.ru (или на consultant.ru, если не найден).
   3. Из снимка и переносов собираются src/data/{holidays,transferredHolidays,workingHolidays,shortDays}.json.
      Если снимок и переносы противоречат друг другу, скрипт завершится с ошибкой.
+
+  Подробнее, включая список ошибок и запуск из GitHub Actions: README.md, раздел «Обновление календаря».
 */
 
 const fs = require('fs');
