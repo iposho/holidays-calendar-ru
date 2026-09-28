@@ -6,8 +6,9 @@
   дни — ячейки `td`. Классы ячеек:
   - `weekend`     — выходной или нерабочий праздничный день (у праздников дополнительно `holiday`);
   - `preholiday`  — предпраздничный (сокращенный) день, обычно со звездочкой;
-  - `nowork`      — нерабочий день по указу Президента (2020–2021 гг.);
   - `inactively`  — день соседнего месяца (пропускается).
+  Класс `nowork` (нерабочие дни по указу Президента в 2020–2021 гг.) намеренно игнорируется: такие дни
+  не являются ни выходными, ни праздниками и в модель календаря не входят.
 */
 
 const { parse } = require('node-html-parser');
@@ -71,7 +72,6 @@ const parseMonthTable = (table, year, month, result) => {
     const iso = toIso(year, month, day);
     if (hasClass(td, 'weekend') || hasClass(td, 'holiday')) result.nonWorkingDays.push(iso);
     if (hasClass(td, 'preholiday')) result.shortDays.push(iso);
-    if (hasClass(td, 'nowork')) result.noWorkDays.push(iso);
   });
 
   if (expected <= total) {
@@ -82,7 +82,7 @@ const parseMonthTable = (table, year, month, result) => {
 /**
  * @param {string} html
  * @param {{ year?: number }} [options]
- * @returns {{ year: number, nonWorkingDays: string[], shortDays: string[], noWorkDays: string[],
+ * @returns {{ year: number, nonWorkingDays: string[], shortDays: string[],
  *   decree: { date: string, number: string, isDraft: boolean } | null,
  *   transfers: { from: string, to: string }[] }}
  */
@@ -102,7 +102,6 @@ const parseConsultantHtml = (html, options = {}) => {
     year,
     nonWorkingDays: [],
     shortDays: [],
-    noWorkDays: [],
     decree: extractDecree(text),
     transfers: extractTransfers(text, year),
   };
@@ -124,7 +123,6 @@ const parseConsultantHtml = (html, options = {}) => {
 
   result.nonWorkingDays.sort();
   result.shortDays.sort();
-  result.noWorkDays.sort();
   return result;
 };
 
