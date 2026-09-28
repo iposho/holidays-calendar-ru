@@ -18,6 +18,7 @@ const {
   generateMonths,
   isWorkingDay,
 } = require('./calendar/calendarApi');
+const { escapeText, serializeIcs } = require('./calendar/ics');
 
 // ---- Utils ----
 const ensureDir = (dirPath) => {
@@ -63,40 +64,7 @@ const generateStableUid = (date, type, name) => {
 
 const DTSTAMP = `${new Date().toISOString().replace(/[:.-]/g, '').substring(0, 15)}Z`;
 
-// ---- iCalendar (RFC 5545) ----
-// Экранирование значений типа TEXT (разд. 3.3.11)
-const escapeText = (text) => text
-  .replace(/\\/g, '\\\\')
-  .replace(/;/g, '\;')
-  .replace(/,/g, '\\,')
-  .replace(/\r?\n/g, '\\n');
-
-// Перенос строк длиннее 75 байт (разд. 3.1): продолжение начинается с пробела,
-// многобайтовые символы UTF-8 не разрываются
-const MAX_LINE_BYTES = 75;
-const foldLine = (line) => {
-  const parts = [];
-  let current = '';
-  let bytes = 0;
-  for (const char of line) {
-    const size = Buffer.byteLength(char, 'utf8');
-    // У строк продолжения первый байт занимает пробел
-    const limit = parts.length ? MAX_LINE_BYTES - 1 : MAX_LINE_BYTES;
-    if (bytes + size > limit) {
-      parts.push(current);
-      current = '';
-      bytes = 0;
-    }
-    current += char;
-    bytes += size;
-  }
-  parts.push(current);
-  return parts.join('\r\n ');
-};
-
-// Строки разделяются CRLF, в том числе после последней
-const serializeIcs = (lines) => `${lines.map(foldLine).join('\r\n')}\r\n`;
-
+// ---- iCalendar ----
 // Событие на весь день: DTEND — следующий день (не включительно)
 const icsEvent = (day, type, summary, category) => {
   const start = new Date(`${day.date}T00:00:00Z`);
