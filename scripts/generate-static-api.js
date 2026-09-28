@@ -6,12 +6,18 @@
 const fs = require('fs');
 const path = require('path');
 
-// ---- Load source JSON data ----
-const holidaysSource = require(path.join(process.cwd(), 'src', 'data', 'holidays.json'));
-const shortDaysSource = require(path.join(process.cwd(), 'src', 'data', 'shortDays.json'));
-const workingHolidaysSource = require(path.join(process.cwd(), 'src', 'data', 'workingHolidays.json'));
-const transferredHolidaysSource = require(path.join(process.cwd(), 'src', 'data', 'transferredHolidays.json'));
-const decreesSource = require(path.join(process.cwd(), 'src', 'data', 'decrees.json'));
+const {
+  years,
+  getDaysCount,
+  getHolidays,
+  getShortDays,
+  getWorkingHolidays,
+  getTransferredHolidays,
+  getDecree: getFullDecree,
+  generateMonth,
+  generateMonths,
+  isWorkingDay,
+} = require('./calendar/calendarApi');
 
 // ---- Utils ----
 const ensureDir = (dirPath) => {
@@ -28,52 +34,11 @@ const writeText = (filePath, text) => {
   fs.writeFileSync(filePath, text, 'utf8');
 };
 
-const getDaysCount = (year, month /* 1-12 */) => new Date(year, month, 0).getDate();
-
-const createDateString = (year, month /* 0-11 */, date, name, isHoliday) => ({
-  date: new Date(Date.UTC(year, month, date)).toISOString().split('T')[0],
-  name,
-  isHoliday,
-});
-
-// ---- Build available years from data keys ----
-const yearsSet = new Set([
-  ...Object.keys(holidaysSource || {}),
-  ...Object.keys(shortDaysSource || {}),
-  ...Object.keys(workingHolidaysSource || {}),
-  ...Object.keys(transferredHolidaysSource || {}),
-]);
-const years = Array.from(yearsSet)
-  .map((y) => Number(y))
-  .filter((y) => Number.isFinite(y))
-  .sort((a, b) => a - b);
-
-// ---- Preprocess data to normalized structures ----
-const processedHolidays = {};
-const processedShortDays = {};
-const processedWorkingHolidays = {};
-const processedTransferredHolidays = {};
-
-for (const year of years) {
-  const holidays = (holidaysSource[String(year)] || []).map(({ month, day, name, isHoliday }) => createDateString(year, month, day, name, isHoliday));
-  const shortDays = (shortDaysSource[String(year)] || []).map(({ month, day, name }) => createDateString(year, month, day, name));
-  const workingHolidays = (workingHolidaysSource[String(year)] || []).map(({ month, day, name }) => createDateString(year, month, day, name));
-  const transferredHolidays = (transferredHolidaysSource[String(year)] || [])
-    .map(({ month, day, name, from }) => ({ ...createDateString(year, month, day, name), from }));
-  processedHolidays[year] = holidays;
-  processedShortDays[year] = shortDays;
-  processedWorkingHolidays[year] = workingHolidays;
-  processedTransferredHolidays[year] = transferredHolidays;
-}
-
-const getHolidays = (year) => processedHolidays[year] || [];
-const getShortDays = (year) => processedShortDays[year] || [];
-const getWorkingHolidays = (year) => processedWorkingHolidays[year] || [];
-const getTransferredHolidays = (year) => processedTransferredHolidays[year] || [];
+const toIsoDate = (date) => date.toISOString().split('T')[0];
 
 // Постановление Правительства РФ о переносе выходных дней (без внутреннего списка переносов)
 const getDecree = (year) => {
-  const decree = decreesSource[String(year)];
+  const decree = getFullDecree(year);
   if (!decree) return null;
   return {
     title: decree.title,
@@ -84,261 +49,72 @@ const getDecree = (year) => {
   };
 };
 
-// ---- Calculations ----
-const countWorkingDays = (year, month /* 0-11 */) => {
-  let count = 0;
-  const date = new Date(Date.UTC(year, month, 1));
-  const holidays = getHolidays(year);
-  const workingHolidays = getWorkingHolidays(year);
-  const transferredHolidays = getTransferredHolidays(year);
-
-  while (date.getUTCMonth() === month) {
-    const isWeekend = date.getUTCDay() === 0 || date.getUTCDay() === 6;
-    const isHoliday = holidays.some((e) => new Date(e.date).valueOf() === date.valueOf());
-    const isTransferredHoliday = transferredHolidays.some((e) => new Date(e.date).valueOf() === date.valueOf());
-    const isWorkingHoliday = workingHolidays.some((e) => new Date(e.date).valueOf() === date.valueOf());
-
-    // A day is working if:
-    // 1. It's a weekday AND NOT a holiday AND NOT a transferred holiday
-    // OR 2. It's a weekend AND IS a working holiday
-    if ((!isWeekend && !isHoliday && !isTransferredHoliday) || (isWeekend && isWorkingHoliday)) count++;
-
-    date.setUTCDate(date.getUTCDate() + 1);
-  }
-  return count;
-};
-
-const countShortDays = (year, month /* 0-11 */) => {
-  let count = 0;
-  const date = new Date(Date.UTC(year, month, 1));
-  const shortDays = getShortDays(year);
-  while (date.getUTCMonth() === month) {
-    if (shortDays.some((e) => new Date(e.date).valueOf() === date.valueOf())) count++;
-    date.setUTCDate(date.getUTCDate() + 1);
-  }
-  return count;
-};
-
-const countWorkingHours = (year, month /* 1-12 */) => (countWorkingDays(year, month - 1) * 8) - countShortDays(year, month - 1);
-
-const generateMonth = (year, month /* 1-12 */) => {
-  const correctMonth = month - 1;
-  const workingDays = countWorkingDays(year, correctMonth);
-  const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(year, correctMonth, 1));
-  return {
-    id: correctMonth,
-    name: monthName,
-    workingDays,
-    notWorkingDays: getDaysCount(year, month) - workingDays,
-    shortDays: countShortDays(year, correctMonth),
-    workingHours: countWorkingHours(year, month),
-  };
-};
-
-const generateMonths = (year) => {
-  const res = [];
-  for (let m = 1; m <= 12; m++) res.push(generateMonth(year, m));
-  return res;
-};
-
-const isWeekend = (date) => {
-  const day = date.getUTCDay();
-  return day === 0 || day === 6;
-};
-
-const isWeekendWorking = (date, workingHolidays) => isWeekend(date)
-  && workingHolidays.some((e) => new Date(e.date).valueOf() === date.valueOf());
-
-const makeDayInfo = (year, month /* 1-12 */, day) => {
-  const date = new Date(Date.UTC(year, month - 1, day));
-  const monthName = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
-  const holidays = getHolidays(year);
-  const shortDays = getShortDays(year);
-  const workingHolidays = getWorkingHolidays(year);
-  const transferredHolidays = getTransferredHolidays(year);
-
-  const isHoliday = holidays.some((e) => new Date(e.date).valueOf() === date.valueOf());
-  const isTransferredHoliday = transferredHolidays.some((e) => new Date(e.date).valueOf() === date.valueOf());
-  const isShort = shortDays.some((e) => new Date(e.date).valueOf() === date.valueOf());
-  const isWorkingHoliday = isWeekendWorking(date, workingHolidays);
-
-  const result = {
-    year: Number(year),
-    month: { name: monthName, id: month - 1 },
-    date,
-    isWorkingDay: !isHoliday && !isTransferredHoliday && (!isWeekend(date) || isWorkingHoliday),
-  };
-
-  if (isHoliday) {
-    const holiday = holidays.find((el) => new Date(el.date).valueOf() === date.valueOf());
-    if (holiday) result.holiday = holiday.name;
-  }
-  if (isTransferredHoliday) {
-    const transferredHoliday = transferredHolidays.find((el) => new Date(el.date).valueOf() === date.valueOf());
-    if (transferredHoliday) {
-      result.isTransferredHoliday = true;
-      result.transferredHolidayName = transferredHoliday.name;
-    }
-  }
-  if (isShort) {
-    const shortDay = shortDays.find((el) => new Date(el.date).valueOf() === date.valueOf());
-    if (shortDay) {
-      result.isShortDay = true;
-      result.holiday = shortDay.name;
-    }
-  }
-  return result;
+// ---- ICS ----
+const UID_PREFIX = {
+  holiday: 'H', short: 'S', transferred: 'T', working: 'W',
 };
 
 const generateStableUid = (date, type, name) => {
   // Создаем стабильный UID на основе даты, типа и названия события
   const dateStr = date.replace(/-/g, '');
-  const typePrefix = type === 'holiday' ? 'H' : type === 'short' ? 'S' : type === 'transferred' ? 'T' : 'W';
   const nameHash = Buffer.from(name, 'utf8').toString('base64').replace(/[^A-Za-z0-9]/g, '').substring(0, 8);
-  return `${dateStr}-${typePrefix}-${nameHash}@kuzyak.in`;
+  return `${dateStr}-${UID_PREFIX[type]}-${nameHash}@kuzyak.in`;
 };
 
-const generateIcsEvents = (year, holidays) => {
-  const shortDays = getShortDays(year);
-  const workingHolidays = getWorkingHolidays(year);
-  const transferredHolidays = getTransferredHolidays(year);
+const DTSTAMP = `${new Date().toISOString().replace(/[:.-]/g, '').substring(0, 15)}Z`;
 
-  // Перенесенные дни выводятся отдельными событиями ниже, поэтому исключаем
-  // их из списка праздников, чтобы не получить два события на одну дату
-  const transferredDates = new Set(transferredHolidays.map((th) => new Date(th.date).valueOf()));
-  const baseHolidays = holidays.filter(
-    (h) => h.isHoliday !== false && !transferredDates.has(new Date(h.date).valueOf()),
-  );
-
-  const allEvents = baseHolidays.map((holiday) => {
-    const startDate = new Date(holiday.date);
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 1);
-
-    const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
-    const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
-    const now = new Date().toISOString().replace(/[:.-]/g, '').substring(0, 15);
-
-    const uid = generateStableUid(holiday.date, 'holiday', holiday.name);
-
-    return [
-      'BEGIN:VEVENT',
-      `DTSTART;VALUE=DATE:${start}`,
-      `DTEND;VALUE=DATE:${end}`,
-      `DTSTAMP:${now}Z`,
-      `UID:${uid}`,
-      `SUMMARY:${holiday.name}`,
-      'END:VEVENT',
-    ].join('\n');
-  });
-
-  // Добавляем короткие дни
-  shortDays.forEach((shortDay) => {
-    const startDate = new Date(shortDay.date);
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 1);
-
-    const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
-    const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
-    const now = new Date().toISOString().replace(/[:.-]/g, '').substring(0, 15);
-    const uid = generateStableUid(shortDay.date, 'short', shortDay.name);
-
-    allEvents.push([
-      'BEGIN:VEVENT',
-      `DTSTART;VALUE=DATE:${start}`,
-      `DTEND;VALUE=DATE:${end}`,
-      `DTSTAMP:${now}Z`,
-      `UID:${uid}`,
-      `SUMMARY:${shortDay.name} (сокращенный день)`,
-      'CATEGORIES:SHORT_DAY',
-      'END:VEVENT',
-    ].join('\n'));
-  });
-
-  // Добавляем рабочие выходные
-  workingHolidays.forEach((workingHoliday) => {
-    const startDate = new Date(workingHoliday.date);
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 1);
-
-    const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
-    const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
-    const now = new Date().toISOString().replace(/[:.-]/g, '').substring(0, 15);
-    const uid = generateStableUid(workingHoliday.date, 'working', workingHoliday.name);
-
-    allEvents.push([
-      'BEGIN:VEVENT',
-      `DTSTART;VALUE=DATE:${start}`,
-      `DTEND;VALUE=DATE:${end}`,
-      `DTSTAMP:${now}Z`,
-      `UID:${uid}`,
-      `SUMMARY:${workingHoliday.name}`,
-      'CATEGORIES:WORKING_HOLIDAY',
-      'END:VEVENT',
-    ].join('\n'));
-  });
-
-  // Добавляем перенесенные выходные
-  transferredHolidays.forEach((transferredHoliday) => {
-    const startDate = new Date(transferredHoliday.date);
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 1);
-
-    const start = startDate.toISOString().split('T')[0].replace(/-/g, '');
-    const end = endDate.toISOString().split('T')[0].replace(/-/g, '');
-    const now = new Date().toISOString().replace(/[:.-]/g, '').substring(0, 15);
-    const uid = generateStableUid(transferredHoliday.date, 'transferred', transferredHoliday.name);
-
-    allEvents.push([
-      'BEGIN:VEVENT',
-      `DTSTART;VALUE=DATE:${start}`,
-      `DTEND;VALUE=DATE:${end}`,
-      `DTSTAMP:${now}Z`,
-      `UID:${uid}`,
-      `SUMMARY:${transferredHoliday.name}`,
-      'CATEGORIES:TRANSFERRED_HOLIDAY',
-      'END:VEVENT',
-    ].join('\n'));
-  });
-
-  return allEvents;
-};
-
-const generateIcs = (year, holidays) => {
-  const events = generateIcsEvents(year, holidays);
+// Событие на весь день: DTEND — следующий день (не включительно)
+const icsEvent = (day, type, summary, category) => {
+  const start = new Date(`${day.date}T00:00:00Z`);
+  const end = new Date(start);
+  end.setUTCDate(end.getUTCDate() + 1);
+  const toIcsDate = (date) => toIsoDate(date).replace(/-/g, '');
   return [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//kuzyak.in//NONSGML Production Calendar//EN',
-    'CALSCALE:GREGORIAN',
-    'METHOD:PUBLISH',
-    `X-WR-CALNAME:Производственный календарь ${year}`,
-    'X-WR-TIMEZONE:Europe/Moscow',
-    ...events,
-    'END:VCALENDAR',
+    'BEGIN:VEVENT',
+    `DTSTART;VALUE=DATE:${toIcsDate(start)}`,
+    `DTEND;VALUE=DATE:${toIcsDate(end)}`,
+    `DTSTAMP:${DTSTAMP}`,
+    `UID:${generateStableUid(day.date, type, day.name)}`,
+    `SUMMARY:${summary}`,
+    ...(category ? [`CATEGORIES:${category}`] : []),
+    'END:VEVENT',
   ].join('\n');
 };
 
-const generateSubscriptionIcs = (allYears) => {
-  const allEvents = [];
-  for (const year of allYears) {
-    allEvents.push(...generateIcsEvents(year, getHolidays(year)));
-  }
-  return [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//kuzyak.in//NONSGML Production Calendar//EN',
-    'CALSCALE:GREGORIAN',
-    'METHOD:PUBLISH',
-    'X-WR-CALNAME:Производственный календарь РФ',
-    'X-WR-CALDESC:Официальные праздники, сокращенные дни и переносы выходных дней в Российской Федерации',
-    'X-WR-TIMEZONE:Europe/Moscow',
-    'REFRESH-INTERVAL;VALUE=DURATION:P1W',
-    'X-PUBLISHED-TTL:P1W',
-    ...allEvents,
-    'END:VCALENDAR',
-  ].join('\n');
-};
+// Праздники и перенесенные выходные не пересекаются: это проверяет scripts/calendar/buildYearData.js
+const generateIcsEvents = (year) => [
+  ...getHolidays(year).map((h) => icsEvent(h, 'holiday', h.name)),
+  ...getShortDays(year).map((s) => icsEvent(s, 'short', `${s.name} (сокращенный день)`, 'SHORT_DAY')),
+  ...getWorkingHolidays(year).map((w) => icsEvent(w, 'working', w.name, 'WORKING_HOLIDAY')),
+  ...getTransferredHolidays(year).map((t) => icsEvent(t, 'transferred', t.name, 'TRANSFERRED_HOLIDAY')),
+];
+
+const generateIcs = (year) => [
+  'BEGIN:VCALENDAR',
+  'VERSION:2.0',
+  'PRODID:-//kuzyak.in//NONSGML Production Calendar//EN',
+  'CALSCALE:GREGORIAN',
+  'METHOD:PUBLISH',
+  `X-WR-CALNAME:Производственный календарь ${year}`,
+  'X-WR-TIMEZONE:Europe/Moscow',
+  ...generateIcsEvents(year),
+  'END:VCALENDAR',
+].join('\n');
+
+const generateSubscriptionIcs = (allYears) => [
+  'BEGIN:VCALENDAR',
+  'VERSION:2.0',
+  'PRODID:-//kuzyak.in//NONSGML Production Calendar//EN',
+  'CALSCALE:GREGORIAN',
+  'METHOD:PUBLISH',
+  'X-WR-CALNAME:Производственный календарь РФ',
+  'X-WR-CALDESC:Официальные праздники, сокращенные дни и переносы выходных дней в Российской Федерации',
+  'X-WR-TIMEZONE:Europe/Moscow',
+  'REFRESH-INTERVAL;VALUE=DURATION:P1W',
+  'X-PUBLISHED-TTL:P1W',
+  ...allYears.flatMap((year) => generateIcsEvents(year)),
+  'END:VCALENDAR',
+].join('\n');
 
 // ---- Generate files ----
 const outRoot = path.join(process.cwd(), 'public', 'static-api', 'calendar');
@@ -364,7 +140,7 @@ for (const y of years) {
   });
 
   // /api/calendar/{year}/ics
-  const icsData = generateIcs(y, getHolidays(y));
+  const icsData = generateIcs(y);
   writeText(path.join(outRoot, 'ics', `${y}.ics`), icsData);
   const legacyIcs = path.join(outRoot, `${y}.ics`);
   if (fs.existsSync(legacyIcs)) {
@@ -372,9 +148,7 @@ for (const y of years) {
   }
 
   // /api/calendar/{year}/holidays
-  const holidays = getHolidays(y)
-    .filter((h) => h.isHoliday !== false)
-    .map((h) => ({ date: new Date(h.date).toISOString(), name: h.name }));
+  const holidays = getHolidays(y).map((h) => ({ date: new Date(h.date).toISOString(), name: h.name }));
   const shortDays = getShortDays(y).map((s) => ({ date: new Date(s.date).toISOString(), name: s.name }));
   const transferredHolidays = getTransferredHolidays(y).map((th) => ({
     date: new Date(th.date).toISOString(),
@@ -418,7 +192,7 @@ for (const y of years) {
 
     const daysInMonth = getDaysCount(y, m);
     for (let d = 1; d <= daysInMonth; d++) {
-      const info = makeDayInfo(y, m, d);
+      const info = isWorkingDay(y, m, d);
       const payload = {
         year: info.year,
         month: info.month,
@@ -428,7 +202,7 @@ for (const y of years) {
         status: 200,
       };
       if (info.holiday) payload.holiday = info.holiday;
-      if (info.isTransferredHoliday) payload.transferredHoliday = info.transferredHolidayName;
+      if (info.transferredHoliday) payload.transferredHoliday = info.transferredHoliday;
 
       // Zero-padded version (01.json, 02.json, etc.)
       writeJSON(path.join(monthDirPadded, `${d.toString().padStart(2, '0')}.json`), payload);
