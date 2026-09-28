@@ -63,6 +63,40 @@ const generateStableUid = (date, type, name) => {
 
 const DTSTAMP = `${new Date().toISOString().replace(/[:.-]/g, '').substring(0, 15)}Z`;
 
+// ---- iCalendar (RFC 5545) ----
+// Экранирование значений типа TEXT (разд. 3.3.11)
+const escapeText = (text) => text
+  .replace(/\\/g, '\\\\')
+  .replace(/;/g, '\;')
+  .replace(/,/g, '\\,')
+  .replace(/\r?\n/g, '\\n');
+
+// Перенос строк длиннее 75 байт (разд. 3.1): продолжение начинается с пробела,
+// многобайтовые символы UTF-8 не разрываются
+const MAX_LINE_BYTES = 75;
+const foldLine = (line) => {
+  const parts = [];
+  let current = '';
+  let bytes = 0;
+  for (const char of line) {
+    const size = Buffer.byteLength(char, 'utf8');
+    // У строк продолжения первый байт занимает пробел
+    const limit = parts.length ? MAX_LINE_BYTES - 1 : MAX_LINE_BYTES;
+    if (bytes + size > limit) {
+      parts.push(current);
+      current = '';
+      bytes = 0;
+    }
+    current += char;
+    bytes += size;
+  }
+  parts.push(current);
+  return parts.join('\r\n ');
+};
+
+// Строки разделяются CRLF, в том числе после последней
+const serializeIcs = (lines) => `${lines.map(foldLine).join('\r\n')}\r\n`;
+
 // Событие на весь день: DTEND — следующий день (не включительно)
 const icsEvent = (day, type, summary, category) => {
   const start = new Date(`${day.date}T00:00:00Z`);
@@ -75,10 +109,10 @@ const icsEvent = (day, type, summary, category) => {
     `DTEND;VALUE=DATE:${toIcsDate(end)}`,
     `DTSTAMP:${DTSTAMP}`,
     `UID:${generateStableUid(day.date, type, day.name)}`,
-    `SUMMARY:${summary}`,
+    `SUMMARY:${escapeText(summary)}`,
     ...(category ? [`CATEGORIES:${category}`] : []),
     'END:VEVENT',
-  ].join('\n');
+  ];
 };
 
 // Праздники и перенесенные выходные не пересекаются: это проверяет scripts/calendar/buildYearData.js
@@ -87,37 +121,39 @@ const generateIcsEvents = (year) => [
   ...getShortDays(year).map((s) => icsEvent(s, 'short', `${s.name} (сокращенный день)`, 'SHORT_DAY')),
   ...getWorkingHolidays(year).map((w) => icsEvent(w, 'working', w.name, 'WORKING_HOLIDAY')),
   ...getTransferredHolidays(year).map((t) => icsEvent(t, 'transferred', t.name, 'TRANSFERRED_HOLIDAY')),
-];
+].flat();
 
-const generateIcs = (year) => [
+const generateIcs = (year) => serializeIcs([
   'BEGIN:VCALENDAR',
   'VERSION:2.0',
   'PRODID:-//kuzyak.in//NONSGML Production Calendar//EN',
   'CALSCALE:GREGORIAN',
   'METHOD:PUBLISH',
-  `X-WR-CALNAME:Производственный календарь ${year}`,
+  `X-WR-CALNAME:${escapeText(`Производственный календарь ${year}`)}`,
   'X-WR-TIMEZONE:Europe/Moscow',
   ...generateIcsEvents(year),
   'END:VCALENDAR',
-].join('\n');
+]);
 
-const generateSubscriptionIcs = (allYears) => [
+const generateSubscriptionIcs = (allYears) => serializeIcs([
   'BEGIN:VCALENDAR',
   'VERSION:2.0',
   'PRODID:-//kuzyak.in//NONSGML Production Calendar//EN',
   'CALSCALE:GREGORIAN',
   'METHOD:PUBLISH',
-  'X-WR-CALNAME:Производственный календарь РФ',
-  'X-WR-CALDESC:Официальные праздники, сокращенные дни и переносы выходных дней в Российской Федерации',
+  `X-WR-CALNAME:${escapeText('Производственный календарь РФ')}`,
+  `X-WR-CALDESC:${escapeText('Официальные праздники, сокращенные дни и переносы выходных дней в Российской Федерации')}`,
   'X-WR-TIMEZONE:Europe/Moscow',
   'REFRESH-INTERVAL;VALUE=DURATION:P1W',
   'X-PUBLISHED-TTL:P1W',
   ...allYears.flatMap((year) => generateIcsEvents(year)),
   'END:VCALENDAR',
-].join('\n');
+]);
 
 // ---- Generate files ----
 const outRoot = path.join(process.cwd(), 'public', 'static-api', 'calendar');
+// Каталог пересоздается, чтобы не оставались файлы прежних версий генератора
+fs.rmSync(outRoot, { recursive: true, force: true });
 ensureDir(outRoot);
 
 // /api/calendar (root endpoint)
@@ -142,10 +178,6 @@ for (const y of years) {
   // /api/calendar/{year}/ics
   const icsData = generateIcs(y);
   writeText(path.join(outRoot, 'ics', `${y}.ics`), icsData);
-  const legacyIcs = path.join(outRoot, `${y}.ics`);
-  if (fs.existsSync(legacyIcs)) {
-    fs.unlinkSync(legacyIcs);
-  }
 
   // /api/calendar/{year}/holidays
   const holidays = getHolidays(y).map((h) => ({ date: new Date(h.date).toISOString(), name: h.name }));
@@ -166,30 +198,18 @@ for (const y of years) {
     status: 200,
   });
 
+  // Месяц и день хранятся только с ведущим нулем (01.json, 01/05.json);
+  // запросы вида /2023/1/5 приводятся к этому виду в rewrites (next.config.js)
+  const pad = (n) => String(n).padStart(2, '0');
   for (let m = 1; m <= 12; m++) {
-    // /api/calendar/{year}/{month} - create both padded and non-padded versions
-    const monthData = {
+    // /api/calendar/{year}/{month}
+    writeJSON(path.join(outRoot, String(y), `${pad(m)}.json`), {
       year: y,
       month: generateMonth(y, m),
       status: 200,
-    };
+    });
 
-    // Zero-padded version (01.json, 02.json, etc.)
-    writeJSON(path.join(outRoot, String(y), `${m.toString().padStart(2, '0')}.json`), monthData);
-
-    // Non-padded version (1.json, 2.json, etc.) - only for single digits
-    if (m < 10) {
-      writeJSON(path.join(outRoot, String(y), `${m}.json`), monthData);
-    }
-
-    // /api/calendar/{year}/{month}/{day} - create both padded and non-padded versions
-    const monthDirPadded = path.join(outRoot, String(y), m.toString().padStart(2, '0'));
-    const monthDirNonPadded = path.join(outRoot, String(y), String(m));
-    ensureDir(monthDirPadded);
-    if (m < 10) {
-      ensureDir(monthDirNonPadded);
-    }
-
+    // /api/calendar/{year}/{month}/{day}
     const daysInMonth = getDaysCount(y, m);
     for (let d = 1; d <= daysInMonth; d++) {
       const info = isWorkingDay(y, m, d);
@@ -203,22 +223,7 @@ for (const y of years) {
       };
       if (info.holiday) payload.holiday = info.holiday;
       if (info.transferredHoliday) payload.transferredHoliday = info.transferredHoliday;
-
-      // Zero-padded version (01.json, 02.json, etc.)
-      writeJSON(path.join(monthDirPadded, `${d.toString().padStart(2, '0')}.json`), payload);
-
-      // Non-padded version (1.json, 2.json, etc.) - only for single digits
-      if (d < 10) {
-        writeJSON(path.join(monthDirPadded, `${d}.json`), payload);
-        if (m < 10) {
-          writeJSON(path.join(monthDirNonPadded, `${d}.json`), payload);
-        }
-      }
-
-      // Zero-padded version in non-padded month directory (for mixed paths like /2023/1/05)
-      if (m < 10) {
-        writeJSON(path.join(monthDirNonPadded, `${d.toString().padStart(2, '0')}.json`), payload);
-      }
+      writeJSON(path.join(outRoot, String(y), pad(m), `${pad(d)}.json`), payload);
     }
   }
 }

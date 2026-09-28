@@ -42,3 +42,20 @@ describe.each(availableYears())('статический API, %i год', (year) 
     }
   });
 });
+
+describe('iCalendar (RFC 5545)', () => {
+  const files = ['index.ics', ...availableYears().map((year) => `${year}.ics`)];
+
+  it.each(files)('%s: строки разделены CRLF и не длиннее 75 байт', (file) => {
+    const text = fs.readFileSync(path.join(ROOT, 'ics', file), 'utf8');
+    expect(text.endsWith('\r\n')).toBe(true);
+    expect(text.replace(/\r\n/g, '')).not.toMatch(/[\r\n]/);
+    text.split('\r\n').forEach((line) => expect(Buffer.byteLength(line, 'utf8')).toBeLessThanOrEqual(75));
+  });
+
+  it('экранирует запятые в текстовых значениях и сохраняет UTF-8 при переносе строк', () => {
+    const unfolded = fs.readFileSync(path.join(ROOT, 'ics', 'index.ics'), 'utf8').replace(/\r\n /g, '');
+    expect(unfolded).toContain('X-WR-CALDESC:Официальные праздники\\, сокращенные дни');
+    expect(unfolded).not.toContain('�');
+  });
+});

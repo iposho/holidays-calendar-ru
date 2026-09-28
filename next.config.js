@@ -27,8 +27,13 @@ const nextConfig = {
       // Single-year calendar (.ics)
       { source: '/api/calendar/:year(\\d{4})/ics', destination: '/static-api/calendar/ics/:year.ics' },
       { source: '/static-api/calendar/:year(\\d{4})\\.ics', destination: '/static-api/calendar/ics/:year.ics' },
-      { source: '/api/calendar/:year(\\d{4})/:month(\\d{1,2})/:day(\\d{1,2})', destination: '/static-api/calendar/:year/:month/:day.json' },
-      { source: '/api/calendar/:year(\\d{4})/:month(\\d{1,2})', destination: '/static-api/calendar/:year/:month.json' },
+      // Месяц и день хранятся только с ведущим нулем: /2023/1/5, /2023/01/5 и /2023/1/05 -> 2023/01/05.json
+      { source: '/api/calendar/:year(\\d{4})/:month(\\d{2})/:day(\\d{2})', destination: '/static-api/calendar/:year/:month/:day.json' },
+      { source: '/api/calendar/:year(\\d{4})/:month(\\d{2})/:day(\\d)', destination: '/static-api/calendar/:year/:month/0:day.json' },
+      { source: '/api/calendar/:year(\\d{4})/:month(\\d)/:day(\\d{2})', destination: '/static-api/calendar/:year/0:month/:day.json' },
+      { source: '/api/calendar/:year(\\d{4})/:month(\\d)/:day(\\d)', destination: '/static-api/calendar/:year/0:month/0:day.json' },
+      { source: '/api/calendar/:year(\\d{4})/:month(\\d{2})', destination: '/static-api/calendar/:year/:month.json' },
+      { source: '/api/calendar/:year(\\d{4})/:month(\\d)', destination: '/static-api/calendar/:year/0:month.json' },
       { source: '/api/calendar/:year(\\d{4})/holidays', destination: '/static-api/calendar/:year/holidays.json' },
       { source: '/api/calendar/:year(\\d{4})', destination: '/static-api/calendar/:year.json' },
     ];
