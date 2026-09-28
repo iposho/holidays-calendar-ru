@@ -3,17 +3,12 @@ interface ErrorMessage {
   status: number;
 }
 
-export const getErrorMessages = (type: string = ''): ErrorMessage => {
-  switch (type) {
-    case 'year':
-      return { error: 'Invalid year', status: 422 };
-    case 'month':
-      return { error: 'Invalid month', status: 422 };
-    case 'day':
-      return { error: 'Invalid day', status: 422 };
-    case 'not_found':
-      return { error: 'Resource not found', status: 404 };
-    default:
-      return { error: 'Unknown error', status: 400 };
-  }
+type ErrorType = 'year' | 'month' | 'day';
+
+const ERROR_MESSAGES: Record<ErrorType, ErrorMessage> = {
+  year: { error: 'Invalid year', status: 422 },
+  month: { error: 'Invalid month', status: 422 },
+  day: { error: 'Invalid day', status: 422 },
 };
+
+export const getErrorMessages = (type: ErrorType): ErrorMessage => ERROR_MESSAGES[type];

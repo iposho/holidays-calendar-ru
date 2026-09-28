@@ -61,9 +61,11 @@ npm run generate-api  # Перегенерировать статические 
   - `consultant/{year}.json` — снимки производственного календаря [КонсультантПлюс](https://www.consultant.ru/law/ref/calendar/proizvodstvennye/).
 - `scripts/update-calendar.js` - обновление данных с consultant.ru
 - `scripts/calendar/` - парсер страницы consultant.ru и сборка данных года с проверками
+- `scripts/calendar/calendarApi.js` - единственная реализация расчетов API (рабочие и сокращенные дни, часы, информация о дне); ее используют генератор, `src/helpers/*` и валидация запросов в `src/proxy.ts`
+- `scripts/calendar/ics.js` - сериализация iCalendar по RFC 5545
 - `.github/workflows/update-calendar.yml` - запуск обновления календаря из GitHub Actions
 - `scripts/generate-static-api.js` - генератор статических API файлов
-- `public/static-api/` - сгенерированные статические файлы (игнорируются в Git)
+- `public/static-api/` - сгенерированные статические файлы (игнорируются в Git). Месяц и день хранятся только с ведущим нулем (`2023/01/05.json`), пути вида `/api/calendar/2023/1/5` приводятся к нему в rewrites (`next.config.js`)
 
 ### Обновление календаря (добавление нового года)
 
