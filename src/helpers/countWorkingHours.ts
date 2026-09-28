@@ -1,9 +1,4 @@
-import { countWorkingDays } from './countWorkingDays';
-import { countShortDays } from './countShortDays';
+import { countWorkingHours as countWorkingHoursImpl } from '../../scripts/calendar/calendarApi';
 
-export const countWorkingHours = (year: number, month: number): number => {
-  const workingDays = countWorkingDays(year, month - 1);
-  const shortDays = countShortDays(year, month - 1);
-
-  return (workingDays * 8) - shortDays;
-};
+// month: 1-12
+export const countWorkingHours = (year: number, month: number): number => countWorkingHoursImpl(year, month);

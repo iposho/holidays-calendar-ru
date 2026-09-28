@@ -6,8 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.1] - 2026-09-28
+
 ### Changed
+- **API**: расчеты реализованы один раз в `scripts/calendar/calendarApi.js` — его используют генератор статического API, `src/helpers/*` и валидация в `proxy.ts` (раньше генератор содержал копию расчетов, не покрытую тестами). Ответы API не изменились
+- **API**: месяц и день хранятся в статическом API только с ведущим нулем, пути `/2023/1/5`, `/2023/01/5`, `/2023/1/05` приводятся к нему в rewrites — 1903 файла вместо 4259. Прямые запросы к `/static-api/calendar/{year}/{m}/{d}.json` без ведущего нуля больше не работают, публичные `/api/calendar/...` — без изменений
+- **API**: поиск по дате через `Map` вместо линейного перебора, генерация API быстрее примерно вдвое
+- **Data**: `update-calendar` прерывает запросы к consultant.ru и publication.pravo.gov.ru через 30 секунд
+- **Tests**: сверка сгенерированных файлов API с расчетами, тесты сериализации ICS
 - **Docs**: руководство по обновлению календаря в README — команды, шаги скрипта, таблица ошибок и предупреждений, запуск из GitHub Actions, чек-лист после добавления нового года
+
+### Fixed
+- **ICS**: файлы соответствуют RFC 5545 — строки разделяются CRLF, строки длиннее 75 байт переносятся без разрыва символов UTF-8, в текстовых значениях экранируются `\`, `;`, `,` и переводы строк. UID событий не изменились, подписчики не получат дублей
+- **Data**: парсер consultant.ru не обрывал список переносов на сокращении «г.» («с субботы 28 декабря 2024 г. на …»)
+
+### Removed
+- Неиспользуемые модули: `generateData`, `generateHolidays`, `generateMonth`, `createDateString`, `generateStaticParams`, `config/cache`, `readmeFetcher`, `theme-provider`, `page.module.scss`, `tailwind.config.js`
+- **Deps**: `next-themes`, `react-markdown`, `rehype-highlight`, `remark-gfm`, `sass`, `tailwindcss-animate`
 
 ## [1.16.0] - 2026-09-24
 

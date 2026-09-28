@@ -33,6 +33,9 @@ const DATA_FILES = {
   shortDays: 'shortDays.json',
 };
 
+// Без таймаута зависший ответ сервера блокирует workflow до лимита GitHub Actions (6 часов)
+const FETCH_TIMEOUT_MS = 30_000;
+
 const consultantUrl = (year) => `https://www.consultant.ru/law/ref/calendar/proizvodstvennye/${year}/`;
 
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -51,7 +54,10 @@ const loadHtml = async (year, htmlPath) => {
   if (htmlPath) return fs.readFileSync(htmlPath, 'utf8');
   const url = consultantUrl(year);
   console.log(`[update-calendar] Загрузка ${url}`);
-  const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (holidays-calendar-ru updater)' } });
+  const res = await fetch(url, {
+    headers: { 'User-Agent': 'Mozilla/5.0 (holidays-calendar-ru updater)' },
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+  });
   if (!res.ok) throw new Error(`consultant.ru ответил ${res.status} ${res.statusText}`);
   return res.text();
 };
@@ -85,7 +91,9 @@ const findDecreeUrl = async (year, { number, date }) => {
   const [yyyy, mm, dd] = date.split('-');
   const name = encodeURIComponent(`О переносе выходных дней в ${year} году`);
   try {
-    const res = await fetch(`${PRAVO_API}?PageSize=10&Index=1&Name=${name}`);
+    const res = await fetch(`${PRAVO_API}?PageSize=10&Index=1&Name=${name}`, {
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
     if (!res.ok) return null;
     const { items = [] } = await res.json();
     const doc = items.find((item) => item.complexName.includes('Правительства Российской Федерации')

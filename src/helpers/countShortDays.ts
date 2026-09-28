@@ -1,17 +1,4 @@
-import { getShortDays } from '@/utils/holidaysLoader';
+import { countShortDays as countShortDaysImpl } from '../../scripts/calendar/calendarApi';
 
-export const countShortDays = (year: number, month: number): number => {
-  let count = 0;
-  const date = new Date(Date.UTC(year, month, 1));
-
-  const shortDays = getShortDays(year) || [];
-
-  while (date.getUTCMonth() === month) {
-    if (shortDays.some((e) => new Date(e.date).valueOf() === date.valueOf())) {
-      count++;
-    }
-    date.setUTCDate(date.getUTCDate() + 1);
-  }
-
-  return count;
-};
+// month: 0-11
+export const countShortDays = (year: number, month: number): number => countShortDaysImpl(year, month);
